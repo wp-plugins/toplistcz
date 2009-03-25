@@ -41,7 +41,7 @@ Czech:
 3.	Aktivujte plugin TopList.cz v administraci plug-inů.
 4.	Přidejte widget TopList.cz v administraci Vzhled->Widgety.
 5.	V konfiguraci widgetu zadejte své ID pro server toplist.cz, případně zvolte další volby. Uložte změny.
-6.	Pokud chcete službu používat, ale nechcete widget vůbec zobrazovat (i když zvolíte neviditelnou ikonu, stále si widget na stránce vezme určité místo), přidejte do své šablony vzhledu - do souboru CSS s kaskádovým stylem: .widget_toplist_cz {display:none}
+6.	Pokud chcete službu používat, ale nechcete widget vůbec zobrazovat (i když zvolíte neviditelnou ikonu, stále si widget na stránce vezme určité místo), přidejte do své šablony vzhledu - do souboru CSS s kaskádovým stylem: .widget\_toplist\_cz {display:none}
 
 English:
 
@@ -50,7 +50,7 @@ English:
 3. Activate the plugin in plugins administration.
 4. Add widget TopList.cz into your sidebar in Widgets administration.
 5. In widget configuration, enter your ID number for toplist.cz server; eventually you can change other options. Save changes.
-6. If you do want to use the service, but don't want to display the widget (even when you select the invisible icon, it still takes part of your sidebar), add to your theme, to the CSS style file: .widget_toplist_cz {display:none}
+6. If you do want to use the service, but don't want to display the widget (even when you select the invisible icon, it still takes part of your sidebar), add to your theme, to the CSS style file: .widget\_toplist\_cz {display:none}
 
 
 == Screenshots ==
