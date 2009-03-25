@@ -4,7 +4,7 @@ Donate link: http://www.honza.info
 Tags: toplist, toplist.cz, web, pages, analytics, statistics, widget
 Requires at least: 2.7.1
 Tested up to: 2.7.1
-Stable tag: 0.1
+Stable tag: 1.0
 
 TopList.cz is a popular web analytics/statistics service in Czech Republic. This plugin is for easy integration of your WordPress blog into this service.
 

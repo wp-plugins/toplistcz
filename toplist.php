@@ -3,7 +3,7 @@
 Plugin Name: TopList.cz
 Plugin URI: http://www.honza.info/category/pocitace/
 Description: Widget for easy integration of TopList.cz, popular Czech website visit statistics server.
-Version: 0.1
+Version: 1.0
 Author: Honza Skýpala
 Author URI: http://www.honza.info
 */
@@ -122,12 +122,12 @@ function widget_toplist_cz_init() {
 			update_option('toplist_cz', $options);
 		}
 		echo '<p><label for="toplist_cz-id">';
-		_e('TopList.cz ID', 'toplist_cz');
+		_e('TopList.cz ID', 'toplistcz');
 		echo ': </label><input type="text" id="toplist_cz-id" name="toplist_cz-id" value="'.intval($options['id']).'" size="7" /></p>'."\n";
-		echo '<p><em>'.__('Your ID on <a href="http://www.toplist.cz" target="_blank">www.toplist.cz</a> server. If you don\'t have one yet, please <a href="http://www.toplist.cz/edit/?a=e" target="_blank">register</a>.', 'toplist_cz').'</em></p><hr />';
+		echo '<p><em>'.__('Your ID on <a href="http://www.toplist.cz" target="_blank">www.toplist.cz</a> server. If you don\'t have one yet, please <a href="http://www.toplist.cz/edit/?a=e" target="_blank">register</a>.', 'toplistcz').'</em></p><hr />';
 		echo '<table><tr>';
 		echo '<td><label for="toplist_cz-logo">';
-		_e('Logo', 'toplist_cz');
+		_e('Logo', 'toplistcz');
 		echo ':&nbsp;</label></td>';
 		echo '<td><input type="radio" name = "toplist_cz-logo" value = ""'.($options['logo']==''?' checked':'').' /></td><td><img src = "http://i.toplist.cz/img/logo.gif" width="88" height="31" /></td>';
 		echo '<td>&nbsp;</td>';
@@ -137,7 +137,7 @@ function widget_toplist_cz_init() {
 		echo "</tr><tr><td></td>";
 		echo '<td><input type="radio" name = "toplist_cz-logo" value = "3"'.($options['logo']=='3'?' checked':'').' /></td><td><img src = "http://i.toplist.cz/img/logo3.gif" width="88" height="31" /></td>';
 		echo '<td>&nbsp;</td>';
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "blank"'.($options['logo']=='blank'?' checked':'').' /></td><td style="text-align: center">'.__('nothing', 'toplist_cz').'</td>';
+		echo '<td><input type="radio" name = "toplist_cz-logo" value = "blank"'.($options['logo']=='blank'?' checked':'').' /></td><td style="text-align: center">'.__('nothing', 'toplistcz').'</td>';
 		echo '<td>&nbsp;</td>';
 		echo '<td><input type="radio" name = "toplist_cz-logo" value = "text"'.($options['logo']=='text'?' checked':'').' /></td><td style="text-align: center"><font size ="2"><b>867314</b><br /><font size="1"><a href="http://www.toplist.cz" target="_top"><b>www.toplist.cz<b></a></font></td>';
 		echo "</tr><tr><td></td>";
@@ -153,19 +153,19 @@ function widget_toplist_cz_init() {
 		echo '</tr></table><hr />';
 		echo '<p><input type="checkbox" id="toplist_cz-referrer" name="toplist_cz-referrer" '.($options['referrer']!=''?'checked ':'').' />';
 		echo ' <label for="toplist_cz-referrer">';
-		_e('Monitor where visitors came from', 'toplist_cz');
+		_e('Monitor where visitors came from', 'toplistcz');
 		echo '</label><br />';
 		echo '<input type="checkbox" id="toplist_cz-resolution" name="toplist_cz-resolution" '.($options['resolution']!=''?'checked ':'').' />';
 		echo ' <label for="toplist_cz-resolution">';
-		_e('Monitor browser graphical resolution', 'toplist_cz');
+		_e('Monitor browser graphical resolution', 'toplistcz');
 		echo '</label><br />';
 		echo '<input type="checkbox" id="toplist_cz-depth" name="toplist_cz-depth" '.($options['depth']!=''?'checked ':'').' />';
 		echo ' <label for="toplist_cz-depth">';
-		_e('Monitor color depth', 'toplist_cz');
+		_e('Monitor color depth', 'toplistcz');
 		echo '</label><br />';
 		echo '<input type="checkbox" id="toplist_cz-pagetitle" name="toplist_cz-pagetitle" '.($options['pagetitle']!=''?'checked ':'').' />';
 		echo ' <label for="toplist_cz-pagetitle">';
-		_e('Record webpage title', 'toplist_cz');
+		_e('Record webpage title', 'toplistcz');
 		echo '</label></p>';
 		echo '<input type="hidden" id="toplist_cz-submit" name="toplist_cz-submit" value="1" />'."\n";
 	}
@@ -182,6 +182,6 @@ add_action('plugins_loaded', 'widget_toplist_cz_init');
 add_action('init', 'toplist_cz_textdomain');
 function toplist_cz_textdomain() {
 	$plugin_dir = basename(dirname(__FILE__));
-	load_plugin_textdomain('toplist_cz', false, $plugin_dir);
+	load_plugin_textdomain('toplistcz', false, $plugin_dir);
 }
 ?>
