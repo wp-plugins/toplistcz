@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: TopList.cz
-Plugin URI: http://www.honza.info/category/pocitace/
+Plugin URI: http://www.honza.info/category/wordpress/
 Description: Widget for easy integration of TopList.cz, popular Czech website visit statistics server.
 Version: 1.0
 Author: Honza Skýpala

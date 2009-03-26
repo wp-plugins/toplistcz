@@ -17,7 +17,7 @@ Czech: Tento plug-in Vám zajistí snadné použití statistické služby TopLis
 
 Související odkazy:
 
-* <a href="http://www.honza.info/category/pocitace/" title="Kategorie počítače na mých stránkách">Plugin Homepage</a>
+* <a href="http://www.honza.info/category/wordpress/" title="Kategorie počítače na mých stránkách">Plugin Homepage</a>
 * <a href="http://www.honza/info/" title="honza.info">Moje webové stránky</a>
 * <a href="http://www.toplist.cz/" title="TopList.cz">Server TopList.cz</a>
 
@@ -25,7 +25,7 @@ English: This plug-in allows for easy integration of web statistics service TopL
 
 Related Links:
 
-* <a href="http://www.honza.info/category/pocitace/" title="Computer related stuff on honza.info">Plugin Homepage</a>
+* <a href="http://www.honza.info/category/wordpress/" title="Computer related stuff on honza.info">Plugin Homepage</a>
 * <a href="http://www.honza/info/" title="Author's homepage">Autor's homepage</a>
 * <a href="http://www.toplist.cz/" title="TopList.cz">Web interface of TopList.cz server</a>
 
