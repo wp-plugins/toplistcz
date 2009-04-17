@@ -20,13 +20,13 @@ msgstr "TopList.cz ID"
 
 #: toplist.php:127
 msgid ""
-"Your ID on <a href=\"http://www.toplist.cz\" target=\"_blank\">www.toplist."
-"cz</a> server. If you don't have one yet, please <a href=\"http://www."
-"toplist.cz/edit/?a=e\" target=\"_blank\">register</a>."
+"Your ID on <a href=\"http://www.%server%\" target=\"_blank\">www.%server%"
+"</a> server. If you don't have one yet, please <a href=\"http://www."
+"%server%/edit/?a=e\" target=\"_blank\">register</a>."
 msgstr ""
-"Vaše ID na serveru <a href=\"http://www.toplist.cz\" target=\"_blank\">www.toplist."
-"cz</a>. Pokud ještě ID nemáte, prosím <a href=\"http://www."
-"toplist.cz/edit/?a=e\" target=\"_blank\">zaregistrujte se</a>."
+"Vaše ID na serveru <a href=\"http://www.%server%\" target=\"_blank\">www.%server%"
+"</a>. Pokud ještě ID nemáte, prosím <a href=\"http://www."
+"%server%/edit/?a=e\" target=\"_blank\">zaregistrujte se</a>."
 
 
 #: toplist.php:130
@@ -52,3 +52,12 @@ msgstr "Zjišťovat barevnou hloubku"
 #: toplist.php:168
 msgid "Record webpage title"
 msgstr "Zaznamenávat titulek stránky"
+
+msgid "Server"
+msgstr "Server"
+
+msgid "Link"
+msgstr "Odkaz"
+
+msgid "Detailed statistics"
+msgstr "Podrobné statistiky"

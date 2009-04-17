@@ -4,7 +4,7 @@ Donate link: http://www.honza.info
 Tags: toplist, toplist.cz, web, pages, analytics, statistics, widget
 Requires at least: 2.7.1
 Tested up to: 2.7.1
-Stable tag: 1.0
+Stable tag: 2.0
 
 TopList.cz is a popular web analytics/statistics service in Czech Republic. This plugin is for easy integration of your WordPress blog into this service.
 
@@ -41,21 +41,31 @@ Czech:
 3.	Aktivujte plugin TopList.cz v administraci plug-inů.
 4.	Přidejte widget TopList.cz v administraci Vzhled->Widgety.
 5.	V konfiguraci widgetu zadejte své ID pro server toplist.cz, případně zvolte další volby. Uložte změny.
-6.	Pokud chcete službu používat, ale nechcete widget vůbec zobrazovat (i když zvolíte neviditelnou ikonu, stále si widget na stránce vezme určité místo), přidejte do své šablony vzhledu - do souboru CSS s kaskádovým stylem: .widget\_toplist\_cz {display:none}
+6.	Plugin zajistí zobrazení ikony TopListu, ale (záměrně) nezajistí jeho formátování (zarovnání vlevo/vpravo, případně vycentrování).  Pokud chcete mít obrázek v sidebaru vycentrovaný, přidejte do své šablony vzhledu - do souboru CSS s kaskádovým stylem: .widget_toplist_cz {text-align:center}
+7.	Pokud chcete službu používat, ale nechcete widget vůbec zobrazovat (i když zvolíte neviditelnou ikonu, stále si widget na stránce vezme určité místo), přidejte do své šablony vzhledu - do souboru CSS s kaskádovým stylem: .widget_toplist_cz {display:none}
 
 English:
 
-1. If you don't have a toplist.cz server registration yet, you have to <a href="http://www.toplist.cz/edit/?a=e" target="_blank">registrate</a> and receive ID number for your web presentation.
-2. Upload the full plugin directory into your wp-content/plugins directory.
-3. Activate the plugin in plugins administration.
-4. Add widget TopList.cz into your sidebar in Widgets administration.
-5. In widget configuration, enter your ID number for toplist.cz server; eventually you can change other options. Save changes.
-6. If you do want to use the service, but don't want to display the widget (even when you select the invisible icon, it still takes part of your sidebar), add to your theme, to the CSS style file: .widget\_toplist\_cz {display:none}
+1.	If you don't have a toplist.cz server registration yet, you have to <a href="http://www.toplist.cz/edit/?a=e" target="_blank">registrate</a> and receive ID number for your web presentation.
+2.	Upload the full plugin directory into your wp-content/plugins directory.
+3.	Activate the plugin in plugins administration.
+4.	Add widget TopList.cz into your sidebar in Widgets administration.
+5.	In widget configuration, enter your ID number for toplist.cz server; eventually you can change other options. Save changes.
+6.	Plugin displays the TopList icon on your blog, but it does not do any formatting (like align to top/right or center). This is on purpose, formatting should be provided by the presentation layer, which is a used theme. To center the icon, add to your theme, to the CSS style file: .widget_toplist_cz {text-align:center}
+7.	If you do want to use the service, but don't want to display the widget (even when you select the invisible icon, it still takes part of your sidebar), add to your theme, to the CSS style file: .widget_toplist_cz {display:none}
 
 
 == Screenshots ==
 
 1. Konfigurace widgetu / widget configuration
+
+
+== Changelog ==
+
+     Version Date       Changes
+     2.0     2009/04/16 Added support for toplist.sk server.
+                        Link can lead to detailed statistics now.
+     1.0     2009/03/25 Initial release.
 
 
 == Licence ==

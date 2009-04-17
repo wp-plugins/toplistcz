@@ -14,15 +14,11 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: toplist.php:125
-msgid "TopList.cz ID"
-msgstr ""
-
 #: toplist.php:127
 msgid ""
-"Your ID on <a href=\"http://www.toplist.cz\" target=\"_blank\">www.toplist."
-"cz</a> server. If you don't have one yet, please <a href=\"http://www."
-"toplist.cz/edit/?a=e\" target=\"_blank\">register</a>."
+"Your ID on <a href=\"http://www.%server%\" target=\"_blank\">www.%server%"
+"</a> server. If you don't have one yet, please <a href=\"http://www."
+"%server%/edit/?a=e\" target=\"_blank\">register</a>."
 msgstr ""
 
 #: toplist.php:130
@@ -47,4 +43,13 @@ msgstr ""
 
 #: toplist.php:168
 msgid "Record webpage title"
+msgstr ""
+
+msgid "Server"
+msgstr ""
+
+msgid "Link"
+msgstr ""
+
+msgid "Detailed statistics"
 msgstr ""

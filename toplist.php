@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: TopList.cz
-Plugin URI: http://www.honza.info/category/wordpress/
+Plugin URI: http://www.honza.info/category/pocitace/
 Description: Widget for easy integration of TopList.cz, popular Czech website visit statistics server.
-Version: 1.0
+Version: 2.0
 Author: Honza Skýpala
 Author URI: http://www.honza.info
 */
@@ -36,10 +36,12 @@ function widget_toplist_cz_init() {
 	function widget_toplist_cz($args) {
 		extract($args);
 		$options = get_option('toplist_cz');
+		if (!array_key_exists('server', $options)) $options['server'] = 'toplist.cz';		
+		if (!array_key_exists('link', $options))   $options['link']   = 'homepage';		
     $title='';
     echo $before_widget.$before_title.$title.$after_title;
     if ($options['logo']=='text') {
-    	echo '<ilayer left=1 top=1 src="http://toplist.cz/count.asp?id='.$options['id'].'&logo=text" width="88" heigth="31"><iframe src="http://toplist.cz/count.asp?id='.$options['id'].'&logo=text" scrolling=no style="width: 88px;height: 31px;"></iframe></ilayer>';
+    	echo '<ilayer left=1 top=1 src="http://'.$options['server'].'/count.asp?id='.$options['id'].'&logo=text" width="88" heigth="31"><iframe src="http://'.$options['server'].'/count.asp?id='.$options['id'].'&logo=text" scrolling=no style="width: 88px;height: 31px;"></iframe></ilayer>';
     } else {
 	  	$width = "88";
 	  	$height = "31";
@@ -68,18 +70,23 @@ function widget_toplist_cz_init() {
 	    case 'bc':
 	    case 'btn':
 	    case 's':
-	    	$imgsrc = "http://toplist.cz/count.asp?logo=".$options['logo']."&";
+	    	$imgsrc="http://".$options['server']."/count.asp?logo=".$options['logo']."&";
 	    	break;
 	    case 'blank':
-	    	$imgsrc = "http://toplist.cz/dot.asp?";
+	    	$imgsrc="http://".$options['server']."/dot.asp?";
 	    	$width = "1";
 	    	$height = "1";
 	    	break;
 	    default:
-	    	$imgsrc = "http://toplist.cz/count.asp?";
+	    	$imgsrc="http://".$options['server']."/count.asp?";
 	    	break;
 	  	}	
-	  	$as = '<a href="http://www.toplist.cz/" target="_top">';
+	  	if ($options['link'] = 'stats') {
+	  		$link = 'http://www.'.$options['server'].'/stat/'.$options['id'];
+	  	} else {
+	  		$link = 'http://www.'.$options['server'].'/';
+	  	}
+	  	$as = '<a href="'.$link.'" target="_top">';
 	  	$ae = '</a>';
 	  	$imgurl = $imgsrc.'id='.$options['id'];
   		$imgs = '<img src="'.$imgurl;
@@ -110,8 +117,10 @@ function widget_toplist_cz_init() {
 	function widget_toplist_cz_options() {
 		$options = get_option('toplist_cz');
 		if (!is_array($options)) {
-			$options = array('id' => '', 'logo' => '', 'referrer' => '', 'resolution' => '', 'depth' => '', 'pagetitle' => '');
+			$options = array('id' => '', 'logo' => '', 'referrer' => '', 'resolution' => '', 'depth' => '', 'pagetitle' => '', 'server' => 'toplist.cz', 'link' => 'homepage');
 		}
+		if (!array_key_exists('server', $options)) $options['server'] = 'toplist.cz';		
+		if (!array_key_exists('link', $options))   $options['link']   = 'homepage';		
 		if ($_POST['toplist_cz-submit']) {
 			$options['id'] = strip_tags($_POST['toplist_cz-id']);
 			$options['logo'] = strip_tags($_POST['toplist_cz-logo']);
@@ -119,38 +128,49 @@ function widget_toplist_cz_init() {
 			$options['resolution'] = strip_tags($_POST['toplist_cz-resolution']);
 			$options['depth'] = strip_tags($_POST['toplist_cz-depth']);
 			$options['pagetitle'] = strip_tags($_POST['toplist_cz-pagetitle']);
+			$options['server'] = strip_tags($_POST['toplist_cz-server']);
+			$options['link'] = strip_tags($_POST['toplist_cz-link']);
 			update_option('toplist_cz', $options);
 		}
-		echo '<p><label for="toplist_cz-id">';
-		_e('TopList.cz ID', 'toplistcz');
-		echo ': </label><input type="text" id="toplist_cz-id" name="toplist_cz-id" value="'.intval($options['id']).'" size="7" /></p>'."\n";
-		echo '<p><em>'.__('Your ID on <a href="http://www.toplist.cz" target="_blank">www.toplist.cz</a> server. If you don\'t have one yet, please <a href="http://www.toplist.cz/edit/?a=e" target="_blank">register</a>.', 'toplistcz').'</em></p><hr />';
+		echo '<table><tr><td><label for="toplist_cz-server">';
+		_e('Server', 'toplistcz');
+		echo ': </label></td>';
+		echo '<td><input type="radio" name="toplist_cz-server" value="toplist.cz"'.($options['server']=='toplist.cz'?' checked':'').'>toplist.cz</input></td>';
+		echo '</tr><tr>';
+		echo '<td></td>';
+		echo '<td><input type="radio" name="toplist_cz-server" value="toplist.sk"'.($options['server']=='toplist.sk'?' checked':'').'>toplist.sk</input></td>';
+		echo '</tr></table><hr />';
+		
+		echo '<p><label for="toplist_cz-id">'.str_replace('toplist', 'TopList', $options['server']).' ID: </label><input type="text" id="toplist_cz-id" name="toplist_cz-id" value="'.intval($options['id']).'" size="7" /></p>'."\n";
+		echo '<p><em>'.str_replace('%server%', $options['server'], __('Your ID on <a href="http://www.%server%" target="_blank">www.%server%</a> server. If you don\'t have one yet, please <a href="http://www.%server%/edit/?a=e" target="_blank">register</a>.', 'toplistcz')).'</em></p><hr />';
+		
 		echo '<table><tr>';
 		echo '<td><label for="toplist_cz-logo">';
 		_e('Logo', 'toplistcz');
 		echo ':&nbsp;</label></td>';
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = ""'.($options['logo']==''?' checked':'').' /></td><td><img src = "http://i.toplist.cz/img/logo.gif" width="88" height="31" /></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value=""'.($options['logo']==''?' checked':'').' /></td><td><img src="http://i.toplist.cz/img/logo.gif" width="88" height="31" /></td>';
 		echo '<td>&nbsp;</td>';
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "1"'.($options['logo']=='1'?' checked':'').' /></td><td style="background-color: black;"><img src = "http://i.toplist.cz/img/logo1.gif" width="88" height="31" /></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="1"'.($options['logo']=='1'?' checked':'').' /></td><td style="background-color: black;"><img src="http://i.toplist.cz/img/logo1.gif" width="88" height="31" /></td>';
 		echo '<td>&nbsp;</td>';
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "2"'.($options['logo']=='2'?' checked':'').' /></td><td><img src = "http://i.toplist.cz/img/logo2.gif" width="88" height="31" /></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="2"'.($options['logo']=='2'?' checked':'').' /></td><td><img src="http://i.toplist.cz/img/logo2.gif" width="88" height="31" /></td>';
 		echo "</tr><tr><td></td>";
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "3"'.($options['logo']=='3'?' checked':'').' /></td><td><img src = "http://i.toplist.cz/img/logo3.gif" width="88" height="31" /></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="3"'.($options['logo']=='3'?' checked':'').' /></td><td><img src="http://i.toplist.cz/img/logo3.gif" width="88" height="31" /></td>';
 		echo '<td>&nbsp;</td>';
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "blank"'.($options['logo']=='blank'?' checked':'').' /></td><td style="text-align: center">'.__('nothing', 'toplistcz').'</td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="blank"'.($options['logo']=='blank'?' checked':'').' /></td><td style="text-align: center">'.__('nothing', 'toplistcz').'</td>';
 		echo '<td>&nbsp;</td>';
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "text"'.($options['logo']=='text'?' checked':'').' /></td><td style="text-align: center"><font size ="2"><b>867314</b><br /><font size="1"><a href="http://www.toplist.cz" target="_top"><b>www.toplist.cz<b></a></font></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="text"'.($options['logo']=='text'?' checked':'').' /></td><td style="text-align: center"><font size ="2"><b>867314</b><br /><font size="1"><a href="http://www.'.$options['server'].'" target="_top"><b>www.'.$options['server'].'<b></a></font></td>';
 		echo "</tr><tr><td></td>";
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "counter"'.($options['logo']=='counter'?' checked':'').' /></td><td><img src = "http://www.toplist.cz/images/counter.asp?s=904182" width="88" height="31" /></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="counter"'.($options['logo']=='counter'?' checked':'').' /></td><td><img src="http://www.'.$options['server'].'/images/counter.asp?s=904182" width="88" height="31" /></td>';
 		echo '<td>&nbsp;</td>';
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "btn"'.($options['logo']=='btn'?' checked':'').' /></td><td style="text-align: center"><img src = "http://www.toplist.cz/images/counter.asp?a=btn&amp;s=722890" width="80" height="15" /></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="btn"'.($options['logo']=='btn'?' checked':'').' /></td><td style="text-align: center"><img src="http://www.'.$options['server'].'/images/counter.asp?a=btn&amp;s=722890" width="80" height="15" /></td>';
 		echo '<td>&nbsp;</td>';
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "s"'.($options['logo']=='s'?' checked':'').' /></td><td style="text-align: center"><img src = "http://i.toplist.cz/img/sqr.gif" width="14" height="14" /></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="s"'.($options['logo']=='s'?' checked':'').' /></td><td style="text-align: center"><img src="http://i.'.$options['server'].'/img/sqr.gif" width="14" height="14" /></td>';
 		echo "</tr><tr><td></td>";
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "mc"'.($options['logo']=='mc'?' checked':'').' /></td><td><img src = "http://www.toplist.cz/images/counter.asp?a=mc&amp;ID=1" width="88" height="60" /></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="mc"'.($options['logo']=='mc'?' checked':'').' /></td><td><img src="http://www.'.$options['server'].'/images/counter.asp?a=mc&amp;ID=1" width="88" height="60" /></td>';
 		echo '<td>&nbsp;</td>';
-		echo '<td><input type="radio" name = "toplist_cz-logo" value = "bc"'.($options['logo']=='bc'?' checked':'').' /></td><td><img src = "http://www.toplist.cz/images/counter.asp?a=bc&amp;ID=1" width="88" height="120" /></td>';
+		echo '<td><input type="radio" name="toplist_cz-logo" value="bc"'.($options['logo']=='bc'?' checked':'').' /></td><td><img src="http://www.'.$options['server'].'/images/counter.asp?a=bc&amp;ID=1" width="88" height="120" /></td>';
 		echo '</tr></table><hr />';
+		
 		echo '<p><input type="checkbox" id="toplist_cz-referrer" name="toplist_cz-referrer" '.($options['referrer']!=''?'checked ':'').' />';
 		echo ' <label for="toplist_cz-referrer">';
 		_e('Monitor where visitors came from', 'toplistcz');
@@ -167,6 +187,17 @@ function widget_toplist_cz_init() {
 		echo ' <label for="toplist_cz-pagetitle">';
 		_e('Record webpage title', 'toplistcz');
 		echo '</label></p>';
+		echo '<hr />';
+		
+		echo '<table><tr><td><label for="toplist_cz-link">';
+		_e('Link', 'toplistcz');
+		echo ': </label></td>';
+		echo '<td><input type="radio" name="toplist_cz-link" value="homepage"'.($options['link']=='homepage'?' checked':'').'>'.$options['server'].'</input></td>';
+		echo '</tr><tr>';
+		echo '<td></td>';
+		echo '<td><input type="radio" name="toplist_cz-link" value="stats"'.($options['link']=='stats'?' checked':'').'>'.__('Detailed statistics', 'toplistcz').'</input></td>';
+		echo '</tr></table>';
+		
 		echo '<input type="hidden" id="toplist_cz-submit" name="toplist_cz-submit" value="1" />'."\n";
 	}
 
