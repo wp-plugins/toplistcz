@@ -1,0 +1,55 @@
+# POT language file for TopList.cz WordPress plug-in
+# This file is put in the public domain.
+# Honza Skýpala <honza@live.com>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: TopList.cz 1.0\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/toplistcz\n"
+"POT-Creation-Date: 2009-03-25 08:50+0000\n"
+"PO-Revision-Date: 2009-03-25 08:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: toplist.php:127
+msgid ""
+"Your ID on <a href=\"http://www.%server%\" target=\"_blank\">www.%server%"
+"</a> server. If you don't have one yet, please <a href=\"http://www."
+"%server%/edit/?a=e\" target=\"_blank\">register</a>."
+msgstr ""
+
+#: toplist.php:130
+msgid "Logo"
+msgstr ""
+
+#: toplist.php:140
+msgid "nothing"
+msgstr ""
+
+#: toplist.php:156
+msgid "Monitor where visitors came from"
+msgstr ""
+
+#: toplist.php:160
+msgid "Monitor browser graphical resolution"
+msgstr ""
+
+#: toplist.php:164
+msgid "Monitor color depth"
+msgstr ""
+
+#: toplist.php:168
+msgid "Record webpage title"
+msgstr ""
+
+msgid "Server"
+msgstr ""
+
+msgid "Link"
+msgstr ""
+
+msgid "Detailed statistics"
+msgstr ""
