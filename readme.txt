@@ -2,9 +2,9 @@
 Contributors: honza.skypala
 Donate link: http://www.honza.info
 Tags: toplist, toplist.cz, web, pages, analytics, statistics, widget
-Requires at least: 2.7.1
-Tested up to: 2.7.1
-Stable tag: 2.0
+Requires at least: 2.8
+Tested up to: 2.8
+Stable tag: 3.0
 
 TopList.cz is a popular web analytics/statistics service in Czech Republic. This plugin is for easy integration of your WordPress blog into this service.
 
@@ -62,10 +62,15 @@ English:
 
 == Changelog ==
 
-     Version Date       Changes
-     2.0     2009/04/16 Added support for toplist.sk server.
-                        Link can lead to detailed statistics now.
-     1.0     2009/03/25 Initial release.
+= 3.0 =
+* Recoded for WordPress 2.8 API.
+
+= 2.0 =
+* Added support for toplist.sk server.
+* Link can lead to detailed statistics now.
+
+= 1.0 =
+* Initial release.
 
 
 == Licence ==
