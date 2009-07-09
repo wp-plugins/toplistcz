@@ -1,6 +1,6 @@
 === TopList.cz ===
 Contributors: honza.skypala
-Donate link: http://www.honza.info
+Donate link: http://www.honza.info/
 Tags: toplist, toplist.cz, web, pages, analytics, statistics, widget
 Requires at least: 2.8
 Tested up to: 2.8
