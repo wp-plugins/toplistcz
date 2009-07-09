@@ -6,7 +6,7 @@ Requires at least: 2.8
 Tested up to: 2.8
 Stable tag: 3.0
 
-TopList.cz is a popular web analytics/statistics service in Czech Republic. This plugin is for easy integration of your WordPress blog into this service.
+TopList.cz is a popular web analytics service in Czech Republic. This plugin is for easy integration of your WordPress blog into this service.
 
 
 == Description ==
