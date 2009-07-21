@@ -244,7 +244,7 @@ class TopList_CZ_Widget extends WP_Widget {
 
 		// tracking admin users
 
-		echo '<table><tr><td width="175px"><label for="' . $this->get_field_name('admindsbl') . '">';
+		echo '<table><tr><td width="190px"><label for="' . $this->get_field_name('admindsbl') . '">';
 		_e('WordPress admin logging', 'toplistcz');
 		echo ': </label></td>';
 		echo '<td>';
