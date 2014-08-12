@@ -1,29 +1,17 @@
 <?php
 /*
 Plugin Name: TopList.cz
-Plugin URI: http://www.honza.info/category/wordpress/
+Plugin URI: http://wordpress.org/plugins/toplistcz/
 Description: Widget for easy integration of TopList.cz, popular Czech website visit statistics server.
 Version: 3.1
 Author: Honza Skypala
 Author URI: http://www.honza.info
-*/
+License: WTFPL license applies
 
-/*  
-	Copyright 2009  Honza Skypala  (email : honza@live.com)
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ToDo:
+* allow centering in widget option
+* allow hiding in widget option
+*
 */
 
 class TopList_CZ_Widget extends WP_Widget {
@@ -300,14 +288,12 @@ class TopList_CZ_Widget extends WP_Widget {
 	}
 }
 
-function toplist_cz_init() {
-	register_widget('TopList_CZ_Widget');
-}
-function toplist_cz_textdomain() {
-	$plugin_dir = basename(dirname(__FILE__));
-	load_plugin_textdomain('toplistcz', false, $plugin_dir);
+class TopList_CZ {
+  public function __construct() {
+    add_action('init', create_function('', 'load_plugin_textdomain("toplistcz", false, basename(dirname(__FILE__)) . "/lang/");'));
+    add_action('widgets_init', create_function('', 'register_widget("TopList_CZ_Widget");'));
+  }
 }
 
-add_action('widgets_init', 'toplist_cz_init');
-add_action('init', 'toplist_cz_textdomain');
+$wp_TopList_CZ = new TopList_CZ();
 ?>
