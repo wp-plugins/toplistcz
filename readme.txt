@@ -3,16 +3,15 @@ Contributors: honza.skypala
 Donate link: http://www.honza.info
 Tags: toplist, toplist.cz, web, pages, analytics, statistics, widget
 Requires at least: 2.8
-Tested up to: 2.8.2
+Tested up to: 3.9.2
 Stable tag: 3.1
 
 TopList.cz is a popular web analytics service in Czech Republic. This plugin is for easy integration of your WordPress blog into this service.
 
-
 == Description ==
 
 For English, see below.
-
+  
 Czech: Tento plug-in Vám zajistí snadné použití statistické služby TopList.cz ve vašem blogu provozovaném na systému WordPress. Plug-in přidá nový widget (nazvaný TopList.cz) a jeho umístěním na stránku (do sidebaru) zajistíte automatické používání služby. Autoři webových stránek běžně zařazují kód pro používání služby TopList.cz do šablony vzhledu - ovšem moje řešení pomocí pluginu/widgetu zajistí používání služby bez ohledu na použitou šablonu - můžete šablony vzhledu přepínat dle libosti a statistiky jsou stále zajištěny. K dispozici je plná konfigurace služby (např. vzhled ikony, detaily sledování apod.).
 
 Související odkazy:
@@ -28,7 +27,6 @@ Related Links:
 * <a href="http://www.honza.info/category/wordpress/" title="Computer related stuff on honza.info">Plugin Homepage</a>
 * <a href="http://www.honza/info/" title="Author's homepage">Autor's homepage</a>
 * <a href="http://www.toplist.cz/" title="TopList.cz">Web interface of TopList.cz server</a>
-
 
 == Installation ==
 
@@ -64,18 +62,28 @@ English:
 
 = 3.1 =
 * Added option for filtering WordPress admins out of the statistics.
-
 = 3.0 =
 * Recoded for WordPress 2.8 API.
-
 = 2.0 =
 * Added support for toplist.sk server.
 * Link can lead to detailed statistics now.
-
 = 1.0 =
 * Initial release.
 
+== License ==
 
-== Licence ==
+WTFPL License 2.0 applies
 
-GNU General Public License version 2 applies
+<code>           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                   Version 2, December 2004
+
+Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
+
+           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+ 0. You just DO WHAT THE FUCK YOU WANT TO.</code>
