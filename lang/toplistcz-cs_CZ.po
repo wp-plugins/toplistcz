@@ -13,15 +13,15 @@ msgstr ""
 "X-Poedit-Country: CZECH REPUBLIC\n"
 "Plural-Forms: nplurals=3; plural=n>=2 && n<=4 ? 1 : n==1 ? 0 : 2;\n"
 
-#: toplist.php:32
+#: toplist.php:15
 msgid "Integrates TopList.cz statistics into your blog"
 msgstr "Začlení statistickou službu TopList.cz do Vašeho blogu"
 
-#: toplist.php:175
+#: toplist.php:163
 msgid "Server"
 msgstr ""
 
-#: toplist.php:185
+#: toplist.php:173
 msgid ""
 "Your ID on <a href=\"http://www.%server%\" target=\"_blank\">www.%server%</"
 "a> server. If you don't have one yet, please <a href=\"http://www.%server%/"
@@ -31,23 +31,23 @@ msgstr ""
 "</a>. Pokud ještě ID nemáte, prosím <a href=\"http://www."
 "%server%/edit/?a=e\" target=\"_blank\">zaregistrujte se</a>."
 
-#: toplist.php:190
+#: toplist.php:178
 msgid "Logo"
 msgstr ""
 
-#: toplist.php:200
+#: toplist.php:188
 msgid "nothing"
 msgstr "nic"
 
-#: toplist.php:218
+#: toplist.php:217
 msgid "Monitor where visitors came from"
 msgstr "Zjišťovat odkud lidé přišli"
 
-#: toplist.php:222
+#: toplist.php:221
 msgid "Monitor browser graphical resolution"
 msgstr "Zjišťovat grafické rozlišení prohlížeče"
 
-#: toplist.php:226
+#: toplist.php:225
 msgid "Monitor color depth"
 msgstr "Zjišťovat barevnou hloubku"
 
@@ -55,27 +55,27 @@ msgstr "Zjišťovat barevnou hloubku"
 msgid "Record webpage title"
 msgstr "Zaznamenávat titulek stránky"
 
-#: toplist.php:236
+#: toplist.php:235
 msgid "Link"
 msgstr "Odkaz"
 
-#: toplist.php:241
+#: toplist.php:240
 msgid "Detailed statistics"
 msgstr "Podrobné statistiky"
 
-#: toplist.php:248
+#: toplist.php:246
 msgid "WordPress admin logging"
 msgstr "Protokolování administrátorů"
 
-#: toplist.php:257
+#: toplist.php:255
 msgid "Enabled"
 msgstr "Povoleno"
 
-#: toplist.php:262
+#: toplist.php:260
 msgid "Disabled"
 msgstr "Zakázáno"
 
-#: toplist.php:297
+#: toplist.php:295
 #, php-format
 msgid ""
 "Disabling this option will prevent all logged in WordPress admins from "
@@ -85,3 +85,19 @@ msgstr ""
 "Zakázáním této volby způsobíte, že přihlášení administrátoři nebudou "
 "protokolováni ve službě %s. Administrátor WordPressu je definován jako uživatel "
 "s úrovní %s nebo vyšší. Vaše úroveň je %d." 
+
+#: toplist.php:205
+msgid "Display"
+msgstr "Zobrazení"
+
+#: toplist.php:208
+msgid "Default (specified by css of your theme)"
+msgstr "Výchozí (určeno css stylem šablony)"
+
+#: toplist.php:209
+msgid "Center (enforced)"
+msgstr "Vycentrováno (vynuceno)"
+
+#: toplist.php:210
+msgid "Hidden (enforced)"
+msgstr "Skryto (vynuceno)"

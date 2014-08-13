@@ -15,69 +15,85 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: toplist.php:32
+#: toplist.php:15
 msgid "Integrates TopList.cz statistics into your blog"
 msgstr ""
 
-#: toplist.php:175
+#: toplist.php:163
 msgid "Server"
 msgstr ""
 
-#: toplist.php:185
+#: toplist.php:173
 msgid ""
 "Your ID on <a href=\"http://www.%server%\" target=\"_blank\">www.%server%</"
 "a> server. If you don't have one yet, please <a href=\"http://www.%server%/"
 "edit/?a=e\" target=\"_blank\">register</a>."
 msgstr ""
 
-#: toplist.php:190
+#: toplist.php:178
 msgid "Logo"
 msgstr ""
 
-#: toplist.php:200
+#: toplist.php:188
 msgid "nothing"
 msgstr ""
 
-#: toplist.php:218
+#: toplist.php:217
 msgid "Monitor where visitors came from"
 msgstr ""
 
-#: toplist.php:222
+#: toplist.php:221
 msgid "Monitor browser graphical resolution"
 msgstr ""
 
-#: toplist.php:226
+#: toplist.php:225
 msgid "Monitor color depth"
 msgstr ""
 
-#: toplist.php:230
+#: toplist.php:229
 msgid "Record webpage title"
 msgstr ""
 
-#: toplist.php:236
+#: toplist.php:235
 msgid "Link"
 msgstr ""
 
-#: toplist.php:241
+#: toplist.php:240
 msgid "Detailed statistics"
 msgstr ""
 
-#: toplist.php:248
+#: toplist.php:246
 msgid "WordPress admin logging"
 msgstr ""
 
-#: toplist.php:257
+#: toplist.php:255
 msgid "Enabled"
 msgstr ""
 
-#: toplist.php:262
+#: toplist.php:260
 msgid "Disabled"
 msgstr ""
 
-#: toplist.php:297
+#: toplist.php:295
 #, php-format
 msgid ""
 "Disabling this option will prevent all logged in WordPress admins from "
 "showing up on your %s reports. A WordPress admin is defined as a user with a "
 "level %s or higher. Your user level is %d."
+msgstr ""
+
+#: toplist.php:205
+msgid "Display"
+msgstr ""
+
+#: toplist.php:208
+msgid "Default (specified by css of your theme)"
+msgstr ""
+
+#: toplist.php:209
+msgid "Center (enforced)"
+msgstr ""
+
+#: toplist.php:210
+msgid "Hidden (enforced)"
 msgstr ""

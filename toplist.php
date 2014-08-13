@@ -3,43 +3,40 @@
 Plugin Name: TopList.cz
 Plugin URI: http://wordpress.org/plugins/toplistcz/
 Description: Widget for easy integration of TopList.cz, popular Czech website visit statistics server.
-Version: 3.1
+Version: 3.2
 Author: Honza Skypala
 Author URI: http://www.honza.info
 License: WTFPL license applies
-
-ToDo:
-* allow centering in widget option
-* allow hiding in widget option
-*
 */
 
 class TopList_CZ_Widget extends WP_Widget {
-	function TopList_CZ_Widget() {
+	function __construct() {
 		$widget_ops = array('classname' => 'widget_toplist_cz',
 												'description' => __('Integrates TopList.cz statistics into your blog', 'toplistcz') );
 		$control_ops = array('width' => 380, 'height' => 500);
-		parent::WP_Widget('toplist_cz', 'TopList.cz', $widget_ops, $control_ops);
+		parent::__construct('toplist_cz', 'TopList.cz', $widget_ops, $control_ops);
+    add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
 	}
-	
+
 	function widget($args, $instance){
 		extract($args);
-		
-		$toplist_server     = empty($instance['server'])     ? 'toplist.cz' : $instance['server'];
-		$toplist_link       = empty($instance['link'])       ? 'homepage'   : $instance['link'];
-		$toplist_logo       = empty($instance['logo'])       ? ''           : $instance['logo'];
-		$toplist_id         = empty($instance['id'])         ? '1'          : $instance['id'];
-		$toplist_referrer   = empty($instance['referrer'])   ? ''           : $instance['referrer'];
-		$toplist_resolution = empty($instance['resolution']) ? ''           : $instance['resolution'];
-		$toplist_depth      = empty($instance['depth'])      ? ''           : $instance['depth'];
-		$toplist_pagetitle  = empty($instance['pagetitle'])  ? ''           : $instance['pagetitle'];
-		$toplist_admindsbl  = empty($instance['admindsbl'])  ? '0'          : $instance['admindsbl'];
-		$toplist_adminlvl   = empty($instance['adminlvl'])   ? '8'          : $instance['adminlvl'];
+    extract(wp_parse_args($instance, array(
+        'server'     => 'toplist.cz',
+        'link'       => 'homepage',
+        'logo'       => '',
+        'id'         => '1',
+        'referrer'   => '',
+        'resolution' => '',
+        'depth'      => '',
+        'pagetitle'  => '',
+        'admindsbl'  => '0',
+        'adminlvl'   => '8'
+      )), EXTR_PREFIX_ALL, 'toplist');
 
 		if ($toplist_admindsbl == 0 || !current_user_can('level_' . $toplist_adminlvl)) {
 	    $title='';
 	    echo $before_widget.$before_title.$title.$after_title;
-	
+
 	    if ($toplist_logo=='text') {
 	    	echo '<ilayer left=1 top=1 src="http://'.$toplist_server.'/count.asp?id='.$toplist_id.'&logo=text" width="88" heigth="31"><iframe src="http://'.$toplist_server.'/count.asp?id='.$toplist_id.'&logo=text" scrolling=no style="width: 88px;height: 31px;"></iframe></ilayer>';
 	    } else {
@@ -80,7 +77,7 @@ class TopList_CZ_Widget extends WP_Widget {
 		    default:
 		    	$imgsrc="http://".$toplist_server."/count.asp?";
 		    	break;
-		  	}	
+		  	}
 		  	if ($toplist_link == 'stats') {
 		  		$link = 'http://www.'.$toplist_server.'/stat/'.$toplist_id;
 		  	} else {
@@ -113,7 +110,7 @@ class TopList_CZ_Widget extends WP_Widget {
 	    echo $after_widget;
 	  }
 	}
-	
+
 	function update($new_instance, $old_instance){
     $instance = $old_instance;
     $instance['server']     = strip_tags(stripslashes($new_instance['server']));
@@ -127,13 +124,14 @@ class TopList_CZ_Widget extends WP_Widget {
     $instance['pagetitle']  = strip_tags(stripslashes($new_instance['pagetitle']));
     $instance['admindsbl']  = strip_tags(stripslashes($new_instance['admindsbl']));
     $instance['adminlvl']   = strip_tags(stripslashes($new_instance['adminlvl']));
+    $instance['display']    = strip_tags(stripslashes($new_instance['display']));
 
   	return $instance;
 	}
-	
+
 	function form($instance){
     //Defaults
-    $instance = wp_parse_args( (array) $instance, array('server'=>'toplist.cz', 
+    $instance = wp_parse_args( (array) $instance, array('server'=>'toplist.cz',
                                                         'link'=>'homepage',
                                                         'logo'=>'',
                                                         'id'=>'',
@@ -143,7 +141,8 @@ class TopList_CZ_Widget extends WP_Widget {
                                                         'depth'=>'',
                                                         'pagetitle'=>'',
                                                         'admindsbl'=>'0',
-                                                        'adminlvl'=>'8')
+                                                        'adminlvl'=>'8',
+                                                        'display'=>'default')
                                                         );
 
     $toplist_server     = htmlspecialchars($instance['server']);
@@ -157,6 +156,7 @@ class TopList_CZ_Widget extends WP_Widget {
     $toplist_pagetitle  = htmlspecialchars($instance['pagetitle']);
 		$toplist_admindsbl  = htmlspecialchars($instance['admindsbl']);
 		$toplist_adminlvl   = htmlspecialchars($instance['adminlvl']);
+		$toplist_display    = htmlspecialchars($instance['display']);
 
 		// server choice input
 		echo '<table><tr><td><label for="' . $this->get_field_name('server') . '">';
@@ -171,7 +171,7 @@ class TopList_CZ_Widget extends WP_Widget {
 		// toplist ID input
 		echo '<p><label for="' . $this->get_field_name('title') . '">'.str_replace('toplist', 'TopList', $toplist_server).' ID: </label><input id="' . $this->get_field_id('title') . '" name="' . $this->get_field_name('title') . '" type="text" value="'.intval($toplist_id).'" size="7" /></p>'."\n";
 		echo '<p style="margin: 5px 10px;"><em>'.str_replace('%server%', $toplist_server, __('Your ID on <a href="http://www.%server%" target="_blank">www.%server%</a> server. If you don\'t have one yet, please <a href="http://www.%server%/edit/?a=e" target="_blank">register</a>.', 'toplistcz')).'</em></p><hr />';
-		
+
 		// logo selection
 		echo '<table><tr>';
 		echo '<td><label for="' . $this->get_field_name('logo') . '">';
@@ -198,8 +198,19 @@ class TopList_CZ_Widget extends WP_Widget {
 		echo '<td><input id="' . $this->get_field_id('logo') . '" name="' . $this->get_field_name('logo') . '" type="radio" value="mc"'.($toplist_logo=='mc'?' checked':'').' /></td><td><img src="http://www.'.$toplist_server.'/images/counter.asp?a=mc&amp;ID=1" width="88" height="60" /></td>';
 		echo '<td>&nbsp;</td>';
 		echo '<td><input id="' . $this->get_field_id('logo') . '" name="' . $this->get_field_name('logo') . '" type="radio" value="bc"'.($toplist_logo=='bc'?' checked':'').' /></td><td><img src="http://www.'.$toplist_server.'/images/counter.asp?a=bc&amp;ID=1" width="88" height="120" /></td>';
-		echo '</tr></table><hr />';
-		
+		echo '</tr></table>';
+
+    // display
+		echo '<p><label for="' . $this->get_field_name('display') . '">';
+		_e('Display', 'toplistcz');
+		echo ': </label>';
+		echo '<select id="' . $this->get_field_id('display') . '" name="' . $this->get_field_name('display') . '">';
+		echo '<option value="default"' . ($toplist_display=='default'?' selected':'') . '>' . __('Default (specified by css of your theme)', 'toplistcz') . '</option>';
+		echo '<option value="center"' . ($toplist_display=='center'?' selected':'') . '>' . __('Center (enforced)', 'toplistcz') . '</option>';
+		echo '<option value="hidden"' . ($toplist_display=='hidden'?' selected':'') . '>' . __('Hidden (enforced)', 'toplistcz') . '</option>';
+		echo '</select>';
+		echo '</p><hr />';
+
 		// monitoring details settings
 		echo '<p><input id="' . $this->get_field_id('referrer') . '" name="' . $this->get_field_name('referrer') . '" type="checkbox" '.($toplist_referrer!=''?'checked ':'').' />';
 		echo ' <label for="' . $this->get_field_name('referrer') . '">';
@@ -218,7 +229,7 @@ class TopList_CZ_Widget extends WP_Widget {
 		_e('Record webpage title', 'toplistcz');
 		echo '</label></p>';
 		echo '<hr />';
-		
+
 		// hyperlink settings
 		echo '<table><tr><td><label for="' . $this->get_field_name('link') . '">';
 		_e('Link', 'toplistcz');
@@ -231,24 +242,23 @@ class TopList_CZ_Widget extends WP_Widget {
 		echo '<hr />';
 
 		// tracking admin users
-
 		echo '<table><tr><td width="190px"><label for="' . $this->get_field_name('admindsbl') . '">';
 		_e('WordPress admin logging', 'toplistcz');
 		echo ': </label></td>';
 		echo '<td>';
 
 		echo "<select name='".$this->get_field_name('admindsbl')."' id='".$this->get_field_id('admindsbl')."'>\n";
-		
+
 		echo "<option value='0'";
 		if($toplist_admindsbl == '0')
 			echo " selected='selected'";
 		echo ">" . __('Enabled', 'toplistcz') . "</option>\n";
-		
+
 		echo "<option value='1'";
 		if($toplist_admindsbl == '1')
 			echo" selected='selected'";
 		echo ">" . __('Disabled', 'toplistcz') . "</option>\n";
-		
+
 		echo "</select>\n<br />";
 		echo '</td></tr><tr><td colspan="2">';
 
@@ -257,7 +267,7 @@ class TopList_CZ_Widget extends WP_Widget {
 		$level .= "name='".$this->get_field_name('adminlvl')."' ";
 		$level .= "id='".$this->get_field_id('adminlvl')."' ";
 		$level .= "value='".stripslashes($toplist_adminlvl)."' />\n";
-		
+
 		# Output the current user level
 		if ( current_user_can('level_10') )
 			$user = '10';
@@ -285,6 +295,30 @@ class TopList_CZ_Widget extends WP_Widget {
 		<p style="margin: 5px 10px;"><em><?php printf(__('Disabling this option will prevent all logged in WordPress admins from showing up on your %s reports. A WordPress admin is defined as a user with a level %s or higher. Your user level is %d.', 'toplistcz'), str_replace('toplist', 'TopList', $toplist_server), $level, $user); ?></em></p>
 		<?php
 		echo '</td></tr></table>';
+	}
+
+	function enqueue_scripts() {
+	  $toplist_options = get_option('widget_toplist_cz', array());
+	  foreach ($toplist_options as $i => $option) {
+	    switch ($option['display']) {
+	      case 'center':
+	        echo "<style type=\"text/css\">
+	          #toplist_cz-$i {
+              text-align: center;
+              margin-left: auto;
+              margin-right: auto;
+	          }
+	        </style>";
+	        break;
+	      case 'hidden':
+	        echo "<style type=\"text/css\">
+	          #toplist_cz-$i {
+              display: none;
+	          }
+	        </style>";
+	        break;
+	    }
+	  }
 	}
 }
 
