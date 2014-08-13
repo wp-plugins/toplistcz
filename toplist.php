@@ -288,12 +288,6 @@ class TopList_CZ_Widget extends WP_Widget {
 	}
 }
 
-class TopList_CZ {
-  public function __construct() {
-    add_action('init', create_function('', 'load_plugin_textdomain("toplistcz", false, basename(dirname(__FILE__)) . "/lang/");'));
-    add_action('widgets_init', create_function('', 'register_widget("TopList_CZ_Widget");'));
-  }
-}
-
-$wp_TopList_CZ = new TopList_CZ();
+add_action('init', create_function('', 'load_plugin_textdomain("toplistcz", false, basename(dirname(__FILE__)) . "/lang/");'));
+add_action('widgets_init', create_function('', 'register_widget("TopList_CZ_Widget");'));
 ?>

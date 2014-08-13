@@ -11,7 +11,7 @@ TopList.cz is a popular web analytics service in Czech Republic. This plugin is 
 == Description ==
 
 For English, see below.
-
+  
 Czech: Tento plug-in Vám zajistí snadné použití statistické služby TopList.cz ve vašem blogu provozovaném na systému WordPress. Plug-in přidá nový widget (nazvaný TopList.cz) a jeho umístěním na stránku (do sidebaru) zajistíte automatické používání služby. Autoři webových stránek běžně zařazují kód pro používání služby TopList.cz do šablony vzhledu - ovšem moje řešení pomocí pluginu/widgetu zajistí používání služby bez ohledu na použitou šablonu - můžete šablony vzhledu přepínat dle libosti a statistiky jsou stále zajištěny. K dispozici je plná konfigurace služby (např. vzhled ikony, detaily sledování apod.).
 
 Související odkazy:
