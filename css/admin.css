@@ -1,0 +1,20 @@
+#toplist_cz_dashboard .inside {
+  display: none;
+}
+
+form#toplist_password_form {
+  display: table;
+}
+
+form#toplist_password_form label {
+  display: table-cell;
+  padding-right: 0.5em;
+}
+
+form#toplist_password_form span {
+  display: table-row;
+}
+
+form#toplist_password_form input {
+  display: table-cell;
+}

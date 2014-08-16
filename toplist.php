@@ -3,22 +3,95 @@
 Plugin Name: TopList.cz
 Plugin URI: http://wordpress.org/plugins/toplistcz/
 Description: Widget for easy integration of TopList.cz, popular Czech website visit statistics server.
-Version: 3.2
+Version: 3.3
 Author: Honza Skypala
 Author URI: http://www.honza.info
 License: WTFPL license applies
+
+ToDo:
+* dashboard widget
+  * do not show dashboard widget, if toplist widget not shown
+  * do not show dashboard widget, if title is in format "$ID NOT FOUND" ("NOT FOUND" substring supports i18n)
+  * displaying content via ajax
+    * handling ajax errors
+  * password entering and storing (Ajax)
+    * check id when storing password
+    * when bad password entered, report graphically
+    * when good password entered, do slideup, slidedown;
+  * loading statistics from toplist.cz/sk, displaying them
+    * check all the statistics including the profi statistics by id = 1
+  * config of widget
+    * select different statistics to show
+    * tiles, two widths, two heights
+    * jQuery sortable
+    * when customizing, check if profi service, whether to offer advanced options
+    * admin can lower the level of user role to display the dashboard widget
+      * test on users with different levels
+  * link to full statistics
+    * security!!! pasword reveal!!!
+    * maybe proxy reading
+  * i18n
+    * localize js
+  * Toplist.sk everywhere
+    * widget caption
+    * source server
+    * test!
+  * caching the content
+  * updating the content on timer
+  * two halves -- first one displayed always, second one by pressing button
+  * tables show only first 5/10 rows, button to expand to full table
+* widget config title -> change from id to name by http://www.toplist.cz/stat/$id
+  * with upgrade from <3.3, fetch this info
+* update monitoring admin users
+  * current_user_can('level_X') deprecated
+* minimize styles and scripts
+* replace 'toplist' or 'TopList' or 'Toplist' by 'TOPlist'
+  * i18n
+* add support for "bezpečnostní kód" seed, viz http://wiki.toplist.cz/Tipy_a_triky#4
 */
 
+if( !class_exists( 'WP_Http' ) )
+    include_once( ABSPATH . WPINC. '/class-http.php' );
+    
 class TopList_CZ_Widget extends WP_Widget {
+  const version = "3.3";
+
 	function __construct() {
 		$widget_ops = array('classname' => 'widget_toplist_cz',
-												'description' => __('Integrates TopList.cz statistics into your blog', 'toplistcz') );
+												'description' => __('Integrates TOPList.cz statistics into your blog', 'toplistcz') );
 		$control_ops = array('width' => 380, 'height' => 500);
-		parent::__construct('toplist_cz', 'TopList.cz', $widget_ops, $control_ops);
+		$toplist_title = 'TOPlist.cz';
+		$config = self::config();
+		if ($config['server'] == 'toplist.sk')
+  		$toplist_title = 'TOPlist.sk';
+		parent::__construct('toplist_cz', $toplist_title, $widget_ops, $control_ops);
     add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+    add_action('wp_dashboard_setup', array($this, 'add_dashboard_widget'));
+    add_action('admin_init', array(__CLASS__, 'version_upgrade'));
+    add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
+    add_action('wp_ajax_toplist_cz_dashboard_content', array($this, 'ajax_dashboard_content'));
+    add_action('wp_ajax_toplist_cz_save_password', array($this, 'ajax_save_password'));
 	}
 
-	function widget($args, $instance){
+	static function activate() {
+    self::update_users_dashboard_order(); // we do this always on activation
+    self::version_upgrade();
+	}
+	
+	static function version_upgrade() {
+	  $user = wp_get_current_user();
+	  if (!in_array('administrator', $user->roles))
+	    return;
+    $registered_version = get_option('toplist_cz_version', '0');
+    if (version_compare($registered_version, self::version, '<')) {
+      if (version_compare($registered_version, '3.3', '<')) {
+        self::update_users_dashboard_order();
+      }
+      update_option('toplist_cz_version', self::version);
+    }
+	}
+
+	function widget($args, $instance) {
 		extract($args);
     extract(wp_parse_args($instance, array(
         'server'     => 'toplist.cz',
@@ -111,52 +184,44 @@ class TopList_CZ_Widget extends WP_Widget {
 	  }
 	}
 
-	function update($new_instance, $old_instance){
+	function update($new_instance, $old_instance) {
     $instance = $old_instance;
-    $instance['server']     = strip_tags(stripslashes($new_instance['server']));
-    $instance['link']       = strip_tags(stripslashes($new_instance['link']));
-    $instance['logo']       = strip_tags(stripslashes($new_instance['logo']));
-    $instance['id']         = strip_tags(stripslashes($new_instance['title']));
-    $instance['title']      = strip_tags(stripslashes($new_instance['title']));
-    $instance['referrer']   = strip_tags(stripslashes($new_instance['referrer']));
-    $instance['resolution'] = strip_tags(stripslashes($new_instance['resolution']));
-    $instance['depth']      = strip_tags(stripslashes($new_instance['depth']));
-    $instance['pagetitle']  = strip_tags(stripslashes($new_instance['pagetitle']));
-    $instance['admindsbl']  = strip_tags(stripslashes($new_instance['admindsbl']));
-    $instance['adminlvl']   = strip_tags(stripslashes($new_instance['adminlvl']));
-    $instance['display']    = strip_tags(stripslashes($new_instance['display']));
-
+    foreach (array(
+        'server',
+        'link',
+        'logo',
+        'id',
+        'referrer',
+        'resolution',
+        'depth',
+        'pagetitle',
+        'admindsbl',
+        'adminlvl',
+        'display'
+      ) as $option) {
+        $instance[$option] = strip_tags(stripslashes($new_instance[$option]));
+    }
+    $instance['title'] = self::get_site_name($instance['id'], $instance['server']);
   	return $instance;
 	}
-
-	function form($instance){
-    //Defaults
-    $instance = wp_parse_args( (array) $instance, array('server'=>'toplist.cz',
-                                                        'link'=>'homepage',
-                                                        'logo'=>'',
-                                                        'id'=>'',
-                                                        'title'=>'',
-                                                        'referrer'=>'',
-                                                        'resolution'=>'',
-                                                        'depth'=>'',
-                                                        'pagetitle'=>'',
-                                                        'admindsbl'=>'0',
-                                                        'adminlvl'=>'8',
-                                                        'display'=>'default')
-                                                        );
-
-    $toplist_server     = htmlspecialchars($instance['server']);
-    $toplist_link       = htmlspecialchars($instance['link']);
-    $toplist_logo       = htmlspecialchars($instance['logo']);
-    $toplist_id         = htmlspecialchars($instance['title']);
-    $toplist_title      = htmlspecialchars($instance['title']);
-    $toplist_referrer   = htmlspecialchars($instance['referrer']);
-    $toplist_resolution = htmlspecialchars($instance['resolution']);
-    $toplist_depth      = htmlspecialchars($instance['depth']);
-    $toplist_pagetitle  = htmlspecialchars($instance['pagetitle']);
-		$toplist_admindsbl  = htmlspecialchars($instance['admindsbl']);
-		$toplist_adminlvl   = htmlspecialchars($instance['adminlvl']);
-		$toplist_display    = htmlspecialchars($instance['display']);
+	
+	function form($instance) {
+    foreach ($instance as &$option)
+      $option = htmlspecialchars($option);
+    extract(wp_parse_args($instance, array(
+        'server'     => 'toplist.cz',
+        'link'       => 'homepage',
+        'logo'       => '',
+        'id'         => '',
+        'title'      => '',
+        'referrer'   => '',
+        'resolution' => '',
+        'depth'      => '',
+        'pagetitle'  => '',
+        'admindsbl'  => '0',
+        'adminlvl'   => '8',
+        'display'    => 'default'
+      )), EXTR_PREFIX_ALL, 'toplist');
 
 		// server choice input
 		echo '<table><tr><td><label for="' . $this->get_field_name('server') . '">';
@@ -169,7 +234,7 @@ class TopList_CZ_Widget extends WP_Widget {
 		echo '</tr></table><hr />';
 
 		// toplist ID input
-		echo '<p><label for="' . $this->get_field_name('title') . '">'.str_replace('toplist', 'TopList', $toplist_server).' ID: </label><input id="' . $this->get_field_id('title') . '" name="' . $this->get_field_name('title') . '" type="text" value="'.intval($toplist_id).'" size="7" /></p>'."\n";
+		echo '<p><label for="' . $this->get_field_name('id') . '">'.str_replace('toplist', 'TOPlist', $toplist_server).' ID: </label><input id="' . $this->get_field_id('id') . '" name="' . $this->get_field_name('id') . '" type="text" value="'.intval($toplist_id).'" size="7" /><input id="' . $this->get_field_id('title') . '" name="' . $this->get_field_name('title') . '" type="hidden" value="'.$toplist_title.'" /></p>'."\n";
 		echo '<p style="margin: 5px 10px;"><em>'.str_replace('%server%', $toplist_server, __('Your ID on <a href="http://www.%server%" target="_blank">www.%server%</a> server. If you don\'t have one yet, please <a href="http://www.%server%/edit/?a=e" target="_blank">register</a>.', 'toplistcz')).'</em></p><hr />';
 
 		// logo selection
@@ -292,7 +357,7 @@ class TopList_CZ_Widget extends WP_Widget {
 		else
 			$user = '0';
 		?>
-		<p style="margin: 5px 10px;"><em><?php printf(__('Disabling this option will prevent all logged in WordPress admins from showing up on your %s reports. A WordPress admin is defined as a user with a level %s or higher. Your user level is %d.', 'toplistcz'), str_replace('toplist', 'TopList', $toplist_server), $level, $user); ?></em></p>
+		<p style="margin: 5px 10px;"><em><?php printf(__('Disabling this option will prevent all logged in WordPress admins from showing up on your %s reports. A WordPress admin is defined as a user with a level %s or higher. Your user level is %d.', 'toplistcz'), str_replace('toplist', 'TOPlist', $toplist_server), $level, $user); ?></em></p>
 		<?php
 		echo '</td></tr></table>';
 	}
@@ -320,8 +385,178 @@ class TopList_CZ_Widget extends WP_Widget {
 	    }
 	  }
 	}
+
+  public function admin_enqueue_scripts($hook) {
+    if ($hook != 'index.php')
+      return;
+    $suffix  = '';
+    wp_enqueue_style('toplist-cz-admin', plugins_url("/css/admin$suffix.css", __FILE__));
+    wp_register_script('toplist-cz-admin', plugins_url("/js/admin$suffix.js", __FILE__), array('jquery'), false, true);
+  }
+
+	const dash_widget_slug = "toplist_cz_dashboard";
+
+	function add_dashboard_widget() {
+	  $user = wp_get_current_user();
+	  $config = self::config();
+	  if (in_array(get_option('toplist_cz_dashboard_widget_user_level', 'administrator'), $user->roles))
+  	  wp_add_dashboard_widget(
+                   self::dash_widget_slug,               // Widget slug.
+                   $config['server'] == 'toplist.sk' ? 'TOPlist.sk' : 'TOPlist.cz', // Title.
+                   array($this, 'draw_dashboard_widget') // Display function.
+      );
+    global $wp_meta_boxes;
+    $my_widget = $wp_meta_boxes['dashboard']['normal']['core'][self::dash_widget_slug];
+    unset($wp_meta_boxes['dashboard']['normal']['core'][self::dash_widget_slug]);
+    $wp_meta_boxes['dashboard']['side']['core'] = array_merge(array($my_widget), $wp_meta_boxes['dashboard']['side']['core']);
+	}
+	
+	function draw_dashboard_widget() {
+	  wp_enqueue_script("toplist-cz-admin");
+	  $ajax_nonce = wp_create_nonce("toplist_dashboard_content");
+	  echo "<data id=\"toplist_nonce\" value=\"$ajax_nonce\" />";
+	}
+
+	private static function update_users_dashboard_order() {
+	  global $wpdb;
+	  if ($user_ids = $wpdb->get_col("SELECT user_id FROM $wpdb->usermeta WHERE meta_key='meta-box-order_dashboard'")) { // instead of traversing through all registered users, we select only the ones with dashboard order meta existing
+	    foreach ($user_ids as $user_id) {
+	      $dash_order = get_user_meta($user_id, 'meta-box-order_dashboard', true);
+	      $found = false;
+	      foreach ($dash_order as $dash_area)
+	        if (strstr($dash_area, self::dash_widget_slug) != FALSE) {
+	          $found = true;
+	          break;
+	        }
+	      if (!$found) {
+	        $dash_order['side'] = self::dash_widget_slug . ',' . $dash_order['side'];
+	        update_user_meta($user_id, 'meta-box-order_dashboard', $dash_order);
+	      }
+	    }
+	  }
+	}
+	
+  private function get_toplist_stats_html($day = FALSE) {
+    $config = $this->config();
+    if ($day == FALSE)
+      $day = date("w");
+
+    $fields = '';
+    $fields .= 'menu=2048'    // Návštěvy za den (tabulka)
+            . '&menu=512'     // Návštěvy za měsíc (tabulka)
+            ;
+    $fields .= "&weekday=$day";
+    $fields .= "&n=" . $config['id'];
+    $fields .= "&show_stats=1";
+    
+    $url = "http://www.{$config['server']}/stat/";
+    
+    if (isset($config['password']) && $config['password'] != '')
+      $fields .= "&heslo=" . $config['password'];
+
+    $http = new WP_Http();
+    $http_result = $http->request($url, array(
+        'method' => 'POST',
+        'body'   => $fields
+      ));
+
+    if (is_wp_error($http_result))
+      return $http_result;
+
+    $body = $http_result['body'];
+    
+    if (strpos($body, '<html>Nespr') !== false)
+      return new WP_Error('wrong_toplist_password', __( "Wrong or missing password to TOPlist.cz account", "toplistcz"));
+
+    return $body;      
+  }
+
+  private function password_form() {
+    $config = self::config();
+    $msg = __('For displaying statistics, you must enter password to your TOPlist.cz account.', 'toplistcz');
+    if ($config['server'] == 'toplist.sk')
+      $msg = preg_replace('/(toplist)\.cz/i', '\1.sk', $msg);
+    $id_label = __('ID', 'toplistcz');
+    $pw_label = __('Password');
+    $button = __('Save');
+ 	  $ajax_nonce = wp_create_nonce("toplist_dashboard_password");
+
+    return "<p>$msg</p><form id=\"toplist_password_form\"><span><label for=\"toplist_id\">$id_label: </label><input type=\"text\" id=\"toplist_id\" name=\"id\" value=\"{$config['title']}\" disabled /></span><span><label for=\"toplist_password\">$pw_label: </label><input type=\"password\" id=\"toplist_password\" name=\"password\" /><input type=\"button\" value=\"$button\" id=\"toplist_password_submit\" /></span><input type=\"hidden\" name=\"_wpnonce\" id=\"toplist_password_nonce\" value=\"$ajax_nonce\" /></form>";
+  }
+
+	private function config() {
+	  $options = get_option('widget_toplist_cz', FALSE);
+	  if ($options == FALSE || !is_array($options) || empty($options))
+	    return FALSE;
+	  foreach ($options as $i => $option) {
+	    return $option;
+	  }
+	}
+	
+  public function ajax_dashboard_content() {
+    check_ajax_referer("toplist_dashboard_content");
+    echo self::dashboard_content();
+  	die();
+  }
+  
+  private function dashboard_content() {
+    $return = "";
+    $html = self::get_toplist_stats_html();
+    if (is_wp_error($html)) {
+      switch ($html->get_error_code()) {
+        case 'wrong_toplist_password':
+          return self::password_form();
+        default:
+          return $html->get_error_message();
+      }
+    } else {
+      // page loaded
+      $dom = new DOMDocument();
+      libxml_use_internal_errors(true);
+      if ($dom->loadHTML($html) !== false) {
+        $info = $dom->getElementById('info');
+        $return = $info->getAttribute('class');
+      }
+      libxml_clear_errors();
+    }
+    return $return;
+  }
+  
+  public function ajax_save_password() {
+    check_ajax_referer("toplist_dashboard_password");
+	  $options = get_option('widget_toplist_cz', FALSE);
+	  if ($options == FALSE || !is_array($options) || empty($options))
+	    return FALSE;
+	  foreach ($options as $i => &$option)
+	    if (is_array($option))
+	      $option['password'] = $_POST['password'];
+	  
+	  update_option('widget_toplist_cz', $options);
+	  
+	  echo self::dashboard_content();
+    die();
+  }
+
+  private function get_site_name($id, $server = 'toplist.cz') {
+    $return = $id;
+	  $url = "http://www.$server/stat/" . $id;
+	  $html = wp_remote_fopen($url);
+    if($html !== false) {
+      $dom = new DOMDocument();
+      libxml_use_internal_errors(true);
+      if ($dom->loadHTML($html) !== false) {
+        if ($dom->getElementById('info') == NULL)
+          $return = $id . " " . __('NOT FOUND', 'toplistcz');
+        else
+          $return = $id . " (" . (new DOMXPath($dom))->query("//table[@id='info']/tr[2]/td")->item(0)->textContent . ")";
+      }
+      libxml_clear_errors();
+    }
+    return $return;
+	}
 }
 
+register_activation_hook(__FILE__, 'TopList_CZ_Widget::activate');  // activation of plugin
 add_action('init', create_function('', 'load_plugin_textdomain("toplistcz", false, basename(dirname(__FILE__)) . "/lang/");'));
 add_action('widgets_init', create_function('', 'register_widget("TopList_CZ_Widget");'));
 ?>
