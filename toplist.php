@@ -11,7 +11,6 @@ License: WTFPL license applies
 ToDo:
 * dashboard widget
   * do not show dashboard widget, if toplist widget not shown
-  * do not show dashboard widget, if title is in format "$ID NOT FOUND" ("NOT FOUND" substring supports i18n)
   * displaying content via ajax
     * handling ajax errors
   * password entering and storing (Ajax)
@@ -52,7 +51,7 @@ ToDo:
 
 if( !class_exists( 'WP_Http' ) )
     include_once( ABSPATH . WPINC. '/class-http.php' );
-    
+
 class TopList_CZ_Widget extends WP_Widget {
   const version = "3.3";
 
@@ -77,7 +76,7 @@ class TopList_CZ_Widget extends WP_Widget {
     self::update_users_dashboard_order(); // we do this always on activation
     self::version_upgrade();
 	}
-	
+
 	static function version_upgrade() {
 	  $user = wp_get_current_user();
 	  if (!in_array('administrator', $user->roles))
@@ -204,7 +203,7 @@ class TopList_CZ_Widget extends WP_Widget {
     $instance['title'] = self::get_site_name($instance['id'], $instance['server']);
   	return $instance;
 	}
-	
+
 	function form($instance) {
     foreach ($instance as &$option)
       $option = htmlspecialchars($option);
@@ -399,18 +398,23 @@ class TopList_CZ_Widget extends WP_Widget {
 	function add_dashboard_widget() {
 	  $user = wp_get_current_user();
 	  $config = self::config();
-	  if (in_array(get_option('toplist_cz_dashboard_widget_user_level', 'administrator'), $user->roles))
-  	  wp_add_dashboard_widget(
-                   self::dash_widget_slug,               // Widget slug.
-                   $config['server'] == 'toplist.sk' ? 'TOPlist.sk' : 'TOPlist.cz', // Title.
-                   array($this, 'draw_dashboard_widget') // Display function.
+
+	  if ($config['title'] == sprintf(__(self::_not_found_string, 'toplistcz'), $config['id']))
+	    return;
+	  if (!in_array(get_option('toplist_cz_dashboard_widget_user_level', 'administrator'), $user->roles))
+	    return;
+
+	  wp_add_dashboard_widget(
+                 self::dash_widget_slug,               // Widget slug.
+                 $config['server'] == 'toplist.sk' ? 'TOPlist.sk' : 'TOPlist.cz', // Title.
+                 array($this, 'draw_dashboard_widget') // Display function.
       );
     global $wp_meta_boxes;
     $my_widget = $wp_meta_boxes['dashboard']['normal']['core'][self::dash_widget_slug];
     unset($wp_meta_boxes['dashboard']['normal']['core'][self::dash_widget_slug]);
     $wp_meta_boxes['dashboard']['side']['core'] = array_merge(array($my_widget), $wp_meta_boxes['dashboard']['side']['core']);
 	}
-	
+
 	function draw_dashboard_widget() {
 	  wp_enqueue_script("toplist-cz-admin");
 	  $ajax_nonce = wp_create_nonce("toplist_dashboard_content");
@@ -435,7 +439,7 @@ class TopList_CZ_Widget extends WP_Widget {
 	    }
 	  }
 	}
-	
+
   private function get_toplist_stats_html($day = FALSE) {
     $config = $this->config();
     if ($day == FALSE)
@@ -448,9 +452,9 @@ class TopList_CZ_Widget extends WP_Widget {
     $fields .= "&weekday=$day";
     $fields .= "&n=" . $config['id'];
     $fields .= "&show_stats=1";
-    
+
     $url = "http://www.{$config['server']}/stat/";
-    
+
     if (isset($config['password']) && $config['password'] != '')
       $fields .= "&heslo=" . $config['password'];
 
@@ -464,11 +468,11 @@ class TopList_CZ_Widget extends WP_Widget {
       return $http_result;
 
     $body = $http_result['body'];
-    
+
     if (strpos($body, '<html>Nespr') !== false)
       return new WP_Error('wrong_toplist_password', __( "Wrong or missing password to TOPlist.cz account", "toplistcz"));
 
-    return $body;      
+    return $body;
   }
 
   private function password_form() {
@@ -492,13 +496,13 @@ class TopList_CZ_Widget extends WP_Widget {
 	    return $option;
 	  }
 	}
-	
+
   public function ajax_dashboard_content() {
     check_ajax_referer("toplist_dashboard_content");
     echo self::dashboard_content();
   	die();
   }
-  
+
   private function dashboard_content() {
     $return = "";
     $html = self::get_toplist_stats_html();
@@ -521,7 +525,7 @@ class TopList_CZ_Widget extends WP_Widget {
     }
     return $return;
   }
-  
+
   public function ajax_save_password() {
     check_ajax_referer("toplist_dashboard_password");
 	  $options = get_option('widget_toplist_cz', FALSE);
@@ -530,13 +534,14 @@ class TopList_CZ_Widget extends WP_Widget {
 	  foreach ($options as $i => &$option)
 	    if (is_array($option))
 	      $option['password'] = $_POST['password'];
-	  
+
 	  update_option('widget_toplist_cz', $options);
-	  
+
 	  echo self::dashboard_content();
     die();
   }
 
+  const _not_found_string = '%1$s NOT FOUND';
   private function get_site_name($id, $server = 'toplist.cz') {
     $return = $id;
 	  $url = "http://www.$server/stat/" . $id;
@@ -546,7 +551,7 @@ class TopList_CZ_Widget extends WP_Widget {
       libxml_use_internal_errors(true);
       if ($dom->loadHTML($html) !== false) {
         if ($dom->getElementById('info') == NULL)
-          $return = $id . " " . __('NOT FOUND', 'toplistcz');
+          $return = sprintf(__(self::_not_found_string, 'toplistcz'), $id);
         else
           $return = $id . " (" . (new DOMXPath($dom))->query("//table[@id='info']/tr[2]/td")->item(0)->textContent . ")";
       }
