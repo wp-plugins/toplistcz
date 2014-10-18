@@ -7,49 +7,10 @@ Version: 3.3
 Author: Honza Skypala
 Author URI: http://www.honza.info
 License: WTFPL license applies
-
-ToDo:
-* dashboard widget
-  * displaying content via ajax
-    * handling ajax errors
-  * password entering and storing (Ajax)
-    * check id when storing password
-    * when bad password entered, report graphically
-    * when good password entered, do slideup, slidedown;
-  * loading statistics from toplist.cz/sk, displaying them
-    * check all the statistics including the profi statistics by id = 1
-  * config of widget
-    * select different statistics to show
-    * tiles, two widths, two heights
-    * jQuery sortable
-    * when customizing, check if profi service, whether to offer advanced options
-    * admin can lower the level of user role to display the dashboard widget
-      * test on users with different levels
-  * link to full statistics
-    * security!!! pasword reveal!!!
-    * maybe proxy reading
-  * i18n
-    * localize js
-  * Toplist.sk everywhere
-    * widget caption
-    * source server
-    * test!
-  * caching the content
-  * updating the content on timer
-  * two halves -- first one displayed always, second one by pressing button
-  * tables show only first 5/10 rows, button to expand to full table
-* widget config title -> change from id to name by http://www.toplist.cz/stat/$id
-  * with upgrade from <3.3, fetch this info
-* update monitoring admin users
-  * current_user_can('level_X') deprecated
-* minimize styles and scripts
-* replace 'toplist' or 'TopList' or 'Toplist' by 'TOPlist'
-  * i18n
-* add support for "bezpečnostní kód" seed, viz http://wiki.toplist.cz/Tipy_a_triky#4
 */
 
-if( !class_exists( 'WP_Http' ) )
-    include_once( ABSPATH . WPINC. '/class-http.php' );
+if(!class_exists('WP_Http'))
+    include_once(ABSPATH . WPINC. '/class-http.php');
 
 class TopList_CZ_Widget extends WP_Widget {
   const version = "3.3";
@@ -84,11 +45,12 @@ class TopList_CZ_Widget extends WP_Widget {
     if (version_compare($registered_version, self::version, '<')) {
       if (version_compare($registered_version, '3.3', '<')) {
         self::update_users_dashboard_order();
+        self::update_widget_title();
       }
       update_option('toplist_cz_version', self::version);
     }
   }
-
+  
   function widget($args, $instance) {
     extract($args);
     extract(wp_parse_args($instance, array(
@@ -439,6 +401,16 @@ class TopList_CZ_Widget extends WP_Widget {
         }
       }
     }
+  }
+  
+  private static function update_widget_title() {
+    $options = get_option('widget_toplist_cz');
+    if (is_array($options))
+      foreach ($options as $i => &$option)
+        if (is_array($option)) {
+          $option['title'] = self::get_site_name($option['id'], $option['server']);
+        }
+    update_option('widget_toplist_cz', $options);
   }
 
   private function get_toplist_stats_html($day = FALSE) {
