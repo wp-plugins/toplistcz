@@ -77,9 +77,10 @@ msgstr ""
 #: toplist.php:295
 #, php-format
 msgid ""
-"Disabling this option will prevent all logged in WordPress admins from "
-"showing up on your %s reports. A WordPress admin is defined as a user with a "
-"level %s or higher. Your user level is %d."
+"Disabling this option will prevent visits from all logged-in WordPress "
+"administrators from showing up on your %1$s reports. Eventually, all "
+"logged-in users with role %2$s or higher are prevented from being logged "
+"by %1$s. Your role is %3$s."
 msgstr ""
 
 #: toplist.php:205

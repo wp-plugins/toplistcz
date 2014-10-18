@@ -46,6 +46,7 @@ class TopList_CZ_Widget extends WP_Widget {
       if (version_compare($registered_version, '3.3', '<')) {
         self::update_users_dashboard_order();
         self::update_widget_title();
+        self::update_widget_adminlvl();
       }
       update_option('toplist_cz_version', self::version);
     }
@@ -63,10 +64,15 @@ class TopList_CZ_Widget extends WP_Widget {
         'depth'      => '',
         'pagetitle'  => '',
         'admindsbl'  => '0',
-        'adminlvl'   => '8'
+        'adminlvl'   => 'administrator'
       )), EXTR_PREFIX_ALL, 'toplist');
+    
+    if (is_numeric($toplist_adminlvl))
+      $toplist_adminlvl = self::user_level_to_role($toplist_adminlvl);
+    if ($toplist_adminlvl == "adminlvl")
+      $toplist_adminlvl = "administrator";
 
-    if ($toplist_admindsbl == 0 || !current_user_can('level_' . $toplist_adminlvl)) {
+    if ($toplist_admindsbl == 0 || !current_user_can(self::role_typical_capability($toplist_adminlvl))) {
       $title='';
       echo $before_widget.$before_title.$title.$after_title;
 
@@ -179,9 +185,13 @@ class TopList_CZ_Widget extends WP_Widget {
         'depth'      => '',
         'pagetitle'  => '',
         'admindsbl'  => '0',
-        'adminlvl'   => '8',
+        'adminlvl'   => 'administrator',
         'display'    => 'default'
       )), EXTR_PREFIX_ALL, 'toplist');
+    if (is_numeric($toplist_adminlvl))
+      $toplist_adminlvl = self::user_level_to_role($toplist_adminlvl);
+    if ($toplist_adminlvl == "adminlvl")
+      $toplist_adminlvl = "administrator";
 
     // server choice input
     echo '<table><tr><td><label for="' . $this->get_field_name('server') . '">';
@@ -287,37 +297,18 @@ class TopList_CZ_Widget extends WP_Widget {
     echo "</select>\n<br />";
     echo '</td></tr><tr><td colspan="2">';
 
-    # Generate the user level box
-    $level = "<input type='text' size='2' ";
-    $level .= "name='".$this->get_field_name('adminlvl')."' ";
-    $level .= "id='".$this->get_field_id('adminlvl')."' ";
-    $level .= "value='".stripslashes($toplist_adminlvl)."' />\n";
+    $roles_combo = "<select name='".$this->get_field_name('adminlvl')."' id='".$this->get_field_id('adminlvl')."'>";
+    foreach (array("administrator", "editor", "author", "contributor", "subscriber") as $role) {
+      $roles_combo .= "<option value=\"$role\""
+                    . ($role == $toplist_adminlvl ? " selected" : "")
+                    . ">"
+                    . _x(ucfirst($role), "User role")
+                    . "</option>";
+    }
+    $roles_combo .= "</select>";
 
-    # Output the current user level
-    if ( current_user_can('level_10') )
-      $user = '10';
-    elseif ( current_user_can('level_9') )
-      $user = '9';
-    elseif ( current_user_can('level_8') )
-      $user = '8';
-    elseif ( current_user_can('level_7') )
-      $user = '7';
-    elseif ( current_user_can('level_6') )
-      $user = '6';
-    elseif ( current_user_can('level_5') )
-      $user = '5';
-    elseif ( current_user_can('level_4') )
-      $user = '4';
-    elseif ( current_user_can('level_3') )
-      $user = '3';
-    elseif ( current_user_can('level_2') )
-      $user = '2';
-    elseif ( current_user_can('level_1') )
-      $user = '1';
-    else
-      $user = '0';
     ?>
-    <p style="margin: 5px 10px;"><em><?php printf(__('Disabling this option will prevent all logged in WordPress admins from showing up on your %s reports. A WordPress admin is defined as a user with a level %s or higher. Your user level is %d.', 'toplistcz'), str_replace('toplist', 'TOPlist', $toplist_server), $level, $user); ?></em></p>
+    <p style="margin: 5px 10px;"><em><?php printf(__('Disabling this option will prevent visits from all logged-in WordPress administrators from showing up on your %1$s reports. Eventually, all logged-in users with role %2$s or higher are prevented from being logged by %1$s. Your role is %3$s.', 'toplistcz'), str_replace('toplist', 'TOPlist', $toplist_server), $roles_combo, _x(ucfirst(wp_get_current_user()->roles[0]), "User role")); ?></em></p>
     <?php
     echo '</td></tr></table>';
   }
@@ -409,6 +400,19 @@ class TopList_CZ_Widget extends WP_Widget {
       foreach ($options as $i => &$option)
         if (is_array($option)) {
           $option['title'] = self::get_site_name($option['id'], $option['server']);
+        }
+    update_option('widget_toplist_cz', $options);
+  }
+
+  private static function update_widget_adminlvl() {
+    $options = get_option('widget_toplist_cz');
+    if (is_array($options))
+      foreach ($options as $i => &$option)
+        if (is_array($option)) {
+          if (is_numeric($option['adminlvl']))
+            $option['adminlvl'] = self::user_level_to_role($option['adminlvl']);
+          if ($option['adminlvl'] == "adminlvl")
+            $option['adminlvl'] = "administrator";
         }
     update_option('widget_toplist_cz', $options);
   }
@@ -532,6 +536,34 @@ class TopList_CZ_Widget extends WP_Widget {
       libxml_clear_errors();
     }
     return $return;
+  }
+  
+  private function user_level_to_role($level) {
+    if (level > 7)
+      return "administrator";
+    else if (level > 2)
+      return "editor";
+    else if (level > 1)
+      return "author";
+    else if (level > 0)
+      return "contributor";
+    else
+      return "subscriber";
+  }
+  
+  private function role_typical_capability($role) {
+    switch ($role) {
+      case "subscriber":
+        return "read";
+      case "contributor":
+        return "edit_posts";
+      case "author":
+        return "publish_posts";
+      case "editor":
+        return "edit_others_posts";
+      default:
+        return "edit_theme_options"; // we require the highest role as default
+    }
   }
 }
 
