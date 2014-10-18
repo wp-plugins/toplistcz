@@ -15,66 +15,66 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: toplist.php:15
+#: toplist.php:21
 msgid "Integrates TopList.cz statistics into your blog"
 msgstr ""
 
-#: toplist.php:163
+#: toplist.php:199
 msgid "Server"
 msgstr ""
 
-#: toplist.php:173
+#: toplist.php:209
 msgid ""
 "Your ID on <a href=\"http://www.%server%\" target=\"_blank\">www.%server%</"
 "a> server. If you don't have one yet, please <a href=\"http://www.%server%/"
 "edit/?a=e\" target=\"_blank\">register</a>."
 msgstr ""
 
-#: toplist.php:178
+#: toplist.php:214
 msgid "Logo"
 msgstr ""
 
-#: toplist.php:188
+#: toplist.php:224
 msgid "nothing"
 msgstr ""
 
-#: toplist.php:217
+#: toplist.php:253
 msgid "Monitor where visitors came from"
 msgstr ""
 
-#: toplist.php:221
+#: toplist.php:257
 msgid "Monitor browser graphical resolution"
 msgstr ""
 
-#: toplist.php:225
+#: toplist.php:261
 msgid "Monitor color depth"
 msgstr ""
 
-#: toplist.php:229
+#: toplist.php:265
 msgid "Record webpage title"
 msgstr ""
 
-#: toplist.php:235
+#: toplist.php:271
 msgid "Link"
 msgstr ""
 
-#: toplist.php:240
+#: toplist.php:276
 msgid "Detailed statistics"
 msgstr ""
 
-#: toplist.php:246
+#: toplist.php:282
 msgid "WordPress admin logging"
 msgstr ""
 
-#: toplist.php:255
+#: toplist.php:291
 msgid "Enabled"
 msgstr ""
 
-#: toplist.php:260
+#: toplist.php:296
 msgid "Disabled"
 msgstr ""
 
-#: toplist.php:295
+#: toplist.php:312
 #, php-format
 msgid ""
 "Disabling this option will prevent visits from all logged-in WordPress "
@@ -83,18 +83,35 @@ msgid ""
 "by %1$s. Your role is %3$s."
 msgstr ""
 
-#: toplist.php:205
+#: toplist.php:241
 msgid "Display"
 msgstr ""
 
-#: toplist.php:208
+#: toplist.php:244
 msgid "Default (specified by css of your theme)"
 msgstr ""
 
-#: toplist.php:209
+#: toplist.php:245
 msgid "Center (enforced)"
 msgstr ""
 
-#: toplist.php:210
+#: toplist.php:246
 msgid "Hidden (enforced)"
+msgstr ""
+
+#: toplist.php:358
+#: toplist.php:757
+msgid "%1$s NOT FOUND"
+msgstr ""
+
+#: toplist.php:478
+msgid "Wrong or missing password to TOPlist.cz account"
+msgstr ""
+
+#: toplist.php:485
+msgid "For displaying statistics, you must enter password to your TOPlist.cz account."
+msgstr ""
+
+#: toplist.php:488
+msgid "ID"
 msgstr ""

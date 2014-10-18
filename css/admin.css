@@ -1,5 +1,26 @@
 #toplist_cz_dashboard .inside {
+  min-height: 25px;
+/*  display: block; */
+}
+
+#toplist_cz_dashboard .inside.error {
+  margin-top: 0px;
+  padding-top: 11px;
+}
+
+#toplist_cz_dashboard .inside.error p {
+  margin-top: 0px
+}
+
+#toplist_cz_dashboard .inside .spinner {
+  display: block;
+  float: left;
+}
+
+#toplist_cz_dashboard .inside #toplist_password_form .spinner {
+  float: none;
   display: none;
+  margin-bottom: 6px;
 }
 
 form#toplist_password_form {
@@ -17,4 +38,103 @@ form#toplist_password_form span {
 
 form#toplist_password_form input {
   display: table-cell;
+}
+
+@media screen and (max-width: 782px) {
+  form#toplist_password_form label {
+    vertical-align: top;
+    padding-top:9px
+  }
+}
+
+#toplist_cz_dashboard .inside > div {
+  margin-bottom: 0.6em;
+  clear: left;
+}
+
+#toplist_cz_dashboard .inside > div:last-child {
+  margin-bottom: 0;
+}
+
+#toplist_cz_dashboard .inside div.graph {
+  width:100%;
+  height:150px;
+}
+
+@media screen and (min-width: 480px) {
+  #toplist_cz_dashboard .inside > div.half-width {
+    width: 50%;
+    float: left;
+    clear: none;
+  }
+}
+
+table.toplist-top {
+  width: 100%;
+  table-layout: fixed;
+}
+
+table.toplist-top th {
+  font-weight: normal;
+  font-style: italic;
+}
+
+table.toplist-top tbody tr:hover {
+  background-color: WhiteSmoke;
+}
+
+table.toplist-top tr td:first-child,
+table.toplist-top tr th:first-child {
+  width: 2.5em;
+  padding-right: 0.5em;
+}
+
+table.toplist-top tr th:last-child {
+  text-align: left;
+}
+
+table.toplist-top tr td:first-child {
+  text-align: right;
+}
+  
+table.toplist-top tr td:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#flot-tooltip {
+    position: absolute;
+    display: none;
+    border: 1px solid gray;
+    padding: 5px;
+    background-color: #FFF;
+    opacity: 0.8;
+}
+
+@keyframes toplist_error_pulsate {
+    50% {
+        background-color: Red;
+    }
+    100% {
+        background-color: inherit;
+    }
+}
+
+@-webkit-keyframes toplist_error_pulsate {
+    50% {
+        background-color: Red;
+    }
+    100% {
+        background-color: inherit;
+    }
+}
+
+.toplist_error_pulsate {
+    animation-name: toplist_error_pulsate;
+    animation-duration: 200ms;
+    animation-iteration-count: 2;
+    -webkit-animation-name: toplist_error_pulsate;
+    -webkit-animation-duration: 200ms;
+    -webkit-animation-iteration-count: 2;
 }

@@ -103,3 +103,21 @@ msgstr "Vycentrováno (vynuceno)"
 #: toplist.php:210
 msgid "Hidden (enforced)"
 msgstr "Skryto (vynuceno)"
+
+#: toplist.php:358
+#: toplist.php:757
+msgid "%1$s NOT FOUND"
+msgstr "%1$s NENALEZENO"
+
+#: toplist.php:478
+msgid "Wrong or missing password to TOPlist.cz account"
+msgstr "Neplatné neno chybějící heslo pro TOPList.cz účet"
+
+#: toplist.php:485
+msgid "For displaying statistics, you must enter password to your TOPlist.cz account."
+msgstr "Pro zobrazení statistik musíte zadat heslo ke svému účtu na TOPlist.cz."
+
+#: toplist.php:488
+msgid "ID"
+msgstr "Účet"
+
