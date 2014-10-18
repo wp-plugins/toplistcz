@@ -10,7 +10,6 @@ License: WTFPL license applies
 
 ToDo:
 * dashboard widget
-  * do not show dashboard widget, if toplist widget not shown
   * displaying content via ajax
     * handling ajax errors
   * password entering and storing (Ajax)
@@ -398,7 +397,9 @@ class TopList_CZ_Widget extends WP_Widget {
   function add_dashboard_widget() {
     $user = wp_get_current_user();
     $config = self::config();
-
+    
+    if (!$config)  // no config found => no dashboard widget
+      return;
     if ($config['title'] == sprintf(__(self::_not_found_string, 'toplistcz'), $config['id']))
       return;
     if (!in_array(get_option('toplist_cz_dashboard_widget_user_level', 'administrator'), $user->roles))
@@ -489,12 +490,13 @@ class TopList_CZ_Widget extends WP_Widget {
   }
 
   private function config() {
-    $options = get_option('widget_toplist_cz', FALSE);
-    if ($options == FALSE || !is_array($options) || empty($options))
-      return FALSE;
-    foreach ($options as $i => $option) {
-      return $option;
-    }
+    $options = get_option('widget_toplist_cz');
+    $sidebars_widgets = get_option('sidebars_widgets');
+    if (is_array($options))
+      foreach ($options as $i => $option)
+        if (is_array($option) && !in_array("toplist_cz-$i", $sidebars_widgets['wp_inactive_widgets']))
+          return $option;
+    return false;
   }
 
   public function ajax_dashboard_content() {
