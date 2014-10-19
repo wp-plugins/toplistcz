@@ -3,7 +3,7 @@
 Plugin Name: TopList.cz
 Plugin URI: http://wordpress.org/plugins/toplistcz/
 Description: Widget for easy integration of TopList.cz, popular Czech website visit statistics server.
-Version: 3.3
+Version: 4.0
 Author: Honza Skypala
 Author URI: http://www.honza.info
 License: WTFPL license applies
@@ -13,7 +13,7 @@ if(!class_exists('WP_Http'))
     include_once(ABSPATH . WPINC. '/class-http.php');
 
 class TopList_CZ_Widget extends WP_Widget {
-  const version = "3.3";
+  const version = "4.0";
   const use_cache = true;
   const cache_expiry = 900;  // 15 minutes * 60 seconds
 
@@ -45,7 +45,7 @@ class TopList_CZ_Widget extends WP_Widget {
       return;
     $registered_version = get_option('toplist_cz_version', '0');
     if (version_compare($registered_version, self::version, '<')) {
-      if (version_compare($registered_version, '3.3', '<')) {
+      if (version_compare($registered_version, '4.0', '<')) {
         self::update_users_dashboard_order();
         self::update_widget_title();
         self::update_widget_adminlvl();
