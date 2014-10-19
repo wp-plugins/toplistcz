@@ -15,6 +15,7 @@ if(!class_exists('WP_Http'))
 class TopList_CZ_Widget extends WP_Widget {
   const version = "3.3";
   const use_cache = true;
+  const cache_expiry = 900;  // 15 minutes * 60 seconds
 
   function __construct() {
     $widget_ops = array('classname' => 'widget_toplist_cz',
@@ -380,7 +381,7 @@ class TopList_CZ_Widget extends WP_Widget {
     $ajax_nonce = wp_create_nonce("toplist_dashboard_content");
     echo "<data id=\"toplist_nonce\" value=\"$ajax_nonce\"></data>";
     $stats = get_option('toplist-cache-' . date('Y-m-d'), false);
-    if (self::use_cache && is_array($stats) && time() <= $stats['local_timestamp'] + 15*60) { // cache expires in 15 minutes
+    if (self::use_cache && is_array($stats) && time() <= $stats['local_timestamp'] + self::cache_expiry) { // cache data still valid
       echo self::dashboard_html($stats);
     } else {
       echo '<span class="spinner"></span>';
@@ -512,7 +513,7 @@ class TopList_CZ_Widget extends WP_Widget {
     $stats = false;
     if (self::use_cache) {
       $stats = get_option('toplist-cache-' . date('Y-m-d'), false);
-      if (is_array($stats) && time() > $stats['local_timestamp'] + 15*60) // cache expires in 15 minutes
+      if (is_array($stats) && time() > $stats['local_timestamp'] + self::cache_expiry) // cache data still valid
         $stats = false;
     }
     if (!$stats) {
