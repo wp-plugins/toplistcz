@@ -3,7 +3,7 @@
 Plugin Name: TopList.cz
 Plugin URI: http://wordpress.org/plugins/toplistcz/
 Description: Widget for easy integration of TopList.cz, popular Czech website visit statistics server.
-Version: 4.0
+Version: 4.0.1
 Author: Honza Skypala
 Author URI: http://www.honza.info
 License: WTFPL license applies
@@ -13,7 +13,7 @@ if(!class_exists('WP_Http'))
     include_once(ABSPATH . WPINC. '/class-http.php');
 
 class TopList_CZ_Widget extends WP_Widget {
-  const version = "4.0";
+  const version = "4.0.1";
   const use_cache = true;
   const cache_expiry = 900;  // 15 minutes * 60 seconds
 
@@ -497,9 +497,14 @@ class TopList_CZ_Widget extends WP_Widget {
   private function config() {
     $options = get_option('widget_toplist_cz');
     $sidebars_widgets = get_option('sidebars_widgets');
+    $flat_sidebar = array();
+    $it = new RecursiveIteratorIterator(new RecursiveArrayIterator($sidebars_widgets));
+    foreach($it as $v) {
+      array_push($flat_sidebar, $v);
+    }
     if (is_array($options))
       foreach ($options as $i => $option)
-        if (is_array($option) && !in_array("toplist_cz-$i", $sidebars_widgets['wp_inactive_widgets']))
+        if (is_array($option) && !in_array("toplist_cz-$i", $sidebars_widgets['wp_inactive_widgets']) && in_array("toplist_cz-$i", $flat_sidebar))
           return $option;
     return false;
   }
@@ -756,8 +761,10 @@ class TopList_CZ_Widget extends WP_Widget {
       if ($dom->loadHTML($html) !== false) {
         if ($dom->getElementById('info') == NULL)
           $return = sprintf(__(self::_not_found_string, 'toplistcz'), $id);
-        else
-          $return = $id . " (" . (new DOMXPath($dom))->query("//table[@id='info']/tr[2]/td")->item(0)->textContent . ")";
+        else {
+          $xpath = new DOMXPath($dom);
+          $return = $id . " (" . $xpath->query("//table[@id='info']/tr[2]/td")->item(0)->textContent . ")";
+        }
       }
       libxml_clear_errors();
     }
