@@ -35,6 +35,9 @@ jQuery(document).ready(function($){
             tickDecimals: 0,
             tickLength:0
           }, 
+          yaxis: {
+            min: 0
+          },
           grid: {
             hoverable: true,
             borderWidth: 1,
