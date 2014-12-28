@@ -3,8 +3,8 @@ Contributors: honza.skypala
 Donate link: http://www.honza.info
 Tags: toplist, toplist.cz, web, pages, analytics, statistics, widget
 Requires at least: 2.8
-Tested up to: 4.0
-Stable tag: 3.2
+Tested up to: 4.1
+Stable tag: 4.0.1
 
 TopList.cz is a popular web analytics service in Czech Republic. This plugin is for easy integration of your WordPress blog into this service.
 
@@ -68,6 +68,8 @@ eventually for hiding the widget:
 
 == Changelog ==
 
+= 4.0.1 =
+* Bug fixes
 = 4.0 =
 * Added dashboard widget, which displays the statistics retrieved from toplist.cz/sk
 = 3.2 =
