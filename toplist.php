@@ -65,6 +65,7 @@ class TopList_CZ_Widget extends WP_Widget {
         'resolution' => '',
         'depth'      => '',
         'pagetitle'  => '',
+        'seccode'    => 0,
         'admindsbl'  => '0',
         'adminlvl'   => 'administrator'
       )), EXTR_PREFIX_ALL, 'toplist');
@@ -77,9 +78,11 @@ class TopList_CZ_Widget extends WP_Widget {
     if ($toplist_admindsbl == 0 || !current_user_can(self::role_typical_capability($toplist_adminlvl))) {
       $title='';
       echo $before_widget.$before_title.$title.$after_title;
+      
+      $security = intval($toplist_seccode) > 0 ? "&seed=" . $toplist_seccode : "";
 
       if ($toplist_logo=='text') {
-        echo '<ilayer left=1 top=1 src="http://'.$toplist_server.'/count.asp?id='.$toplist_id.'&logo=text" width="88" heigth="31"><iframe src="http://'.$toplist_server.'/count.asp?id='.$toplist_id.'&logo=text" scrolling=no style="width: 88px;height: 31px;"></iframe></ilayer>';
+        echo '<ilayer left=1 top=1 src="http://'.$toplist_server.'/count.asp?id='.$toplist_id.'&logo=text' . $security . '" width="88" heigth="31"><iframe src="http://'.$toplist_server.'/count.asp?id='.$toplist_id.'&logo=text' . $security . '" scrolling=no style="width: 88px;height: 31px;"></iframe></ilayer>';
       } else {
         $width = "88";
         $height = "31";
@@ -126,7 +129,7 @@ class TopList_CZ_Widget extends WP_Widget {
         }
         $as = '<a href="'.$link.'" target="_top">';
         $ae = '</a>';
-        $imgurl = $imgsrc.'id='.$toplist_id;
+        $imgurl = $imgsrc.'id='.$toplist_id . $security;
         $imgs = '<img src="'.$imgurl;
         $imge = '" alt="TOPlist" border="0" width="'.$width.'" height="'.$height.'" />';
         $img = $imgs.$imge;
@@ -163,6 +166,7 @@ class TopList_CZ_Widget extends WP_Widget {
         'resolution',
         'depth',
         'pagetitle',
+        'seccode',
         'admindsbl',
         'adminlvl',
         'display'
@@ -186,6 +190,7 @@ class TopList_CZ_Widget extends WP_Widget {
         'resolution' => '',
         'depth'      => '',
         'pagetitle'  => '',
+        'seccode'    => 0,
         'admindsbl'  => '0',
         'adminlvl'   => 'administrator',
         'display'    => 'default'
@@ -264,8 +269,11 @@ class TopList_CZ_Widget extends WP_Widget {
     echo '<input id="' . $this->get_field_id('pagetitle') . '" name="' . $this->get_field_name('pagetitle') . '" type="checkbox" '.($toplist_pagetitle!=''?'checked ':'').' />';
     echo ' <label for="' . $this->get_field_name('pagetitle') . '">';
     _e('Record webpage title', 'toplistcz');
-    echo '</label></p>';
-    echo '<hr />';
+    echo '</label><br />';
+    echo '<label for="' . $this->get_field_name('seccode') . '">' . __('Security code:', 'toplistcz') . '</label> ';
+    echo '<input id="' . $this->get_field_id('seccode') . '" name="' . $this->get_field_name('seccode') . '" type="number" min="0" max="200" value="' . $toplist_seccode . '" />';
+    echo '[<a href="http://wiki.toplist.cz/Tipy_a_triky#4" target="_blank"><span style="font-size:x-small">' . __('what is this?', 'toplistcz') . '</span></a>]';
+    echo '</p><hr />';
 
     // hyperlink settings
     echo '<table><tr><td><label for="' . $this->get_field_name('link') . '">';
