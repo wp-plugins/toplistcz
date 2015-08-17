@@ -35,13 +35,15 @@ jQuery(document).ready(function($){
             tickDecimals: 0,
             tickLength:0
           }, 
-          yaxis: {
-            min: 0
-          },
           grid: {
             hoverable: true,
             borderWidth: 1,
             borderColor: "LightGray"
+          },
+          legend: {
+            labelFormatter: function(label, series) {
+              return label + ' (' + series.data.reduce(function(pv, cv) { return pv + cv[1]; }, 0).toLocaleString() + ')';
+            }
           }
     }
     var plot = $.plot(selector, dataSets, options);
