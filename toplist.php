@@ -553,12 +553,13 @@ class TopList_CZ_Widget extends WP_Widget {
     $base = str_replace("https://", "", $base);
     
     $return = "";
-    foreach ($data as $key => $value) {
-      if (substr($key, 0, strlen($base)) == $base && $key != $base)
-        $key = substr($key, strlen($base));
-      $return .= "<tr><td>" . $value . "</td><td>" . $key . "</td></tr>";
-      if (--$rows == 0) break;
-    }
+    if (!empty($data))
+      foreach ($data as $key => $value) {
+        if (substr($key, 0, strlen($base)) == $base && $key != $base)
+          $key = substr($key, strlen($base));
+        $return .= "<tr><td>" . $value . "</td><td>" . $key . "</td></tr>";
+        if (--$rows == 0) break;
+      }
     return $return; 
   }
   
