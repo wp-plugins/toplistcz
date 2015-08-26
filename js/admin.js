@@ -2,7 +2,103 @@ jQuery(document).ready(function($){
   
   var closed = $("#toplist_cz_dashboard").hasClass("closed");
   var inside = $("#toplist_cz_dashboard .inside");
+  var content = inside.find(".content");
+  var spinner = inside.find(".spinner");
+  var erroricon = inside.find(".erroricon");
 
+  var active = true;
+  var ok_reload_time    = 15 * 60 * 1000;  // 15 minutes reload time
+  var error_reload_time =  1 * 60 * 1000;  // 1 minutes reload time if error encountered
+  var reload_time = ok_reload_time;
+  var previous_reload_was_error = false;
+  var timer_id = setInterval(reload, reload_time);
+  
+  var initial_error = false;
+  
+  function reload() {
+    if (!active && timer_id) {
+      clearInterval(timer_id);
+      timer_id = 0;
+      return;
+    }
+
+    var output = "";
+    var errmsg;
+    spinner.show();
+    erroricon.hide();
+
+    var initial_fetch = (content.text().trim() == "");
+
+    $.post(ajaxurl, data, function(response) {
+      if (initial_fetch && !closed) inside.hide();
+      if (spinner.hasClass("reload"))
+        spinner.fadeOut();
+      else
+        spinner.hide();
+
+      if (response.success && previous_reload_was_error) {
+        previous_reload_was_error = false;
+        reload_time = ok_reload_time;
+        if (timer_id) clearInterval(timer_id);
+        timer_id = setInterval(reload, reload_time);
+      }
+
+      if (!response.success && response.hasOwnProperty("reload") && response.reload == true) {
+        errmsg = "Došlo k chybě při načítání. Zkusím to za chvíli znova.";
+        if (response.html.trim() != "")
+          errmsg += "<br />" + response.html.trim();
+        if (!(initial_fetch || initial_error))
+          erroricon.show().attr("title", errmsg.replace("<br />", "\n").replace("načítání", "obnovování"));
+        if (!previous_reload_was_error) {
+          if (initial_fetch) {
+            initial_error = true;
+            output = errmsg;
+          }
+          previous_reload_was_error = true;
+          reload_time = error_reload_time;
+          if (timer_id) clearInterval(timer_id);
+          timer_id = setInterval(reload, reload_time);
+          spinner.addClass("reload");
+        } else {
+          return;
+        }
+      } else {
+        output = response.html;
+        if (!response.success) {
+          if (timer_id) clearInterval(timer_id);
+          timer_id = 0;
+        }
+        spinner.addClass("reload");
+      }
+
+      if (response.success && initial_error) {
+        if (!closed) inside.slideUp('fast').promise();
+        initial_error = false;
+        initial_fetch = true;
+      }
+      if (output != "") {
+        content.html(output);
+        if (initial_fetch && !closed) inside.slideDown('fast', function() { inside.removeAttr("style"); });
+      }
+
+      if (!response.success && initial_fetch) {
+        inside.addClass("error");
+        return;
+      }
+      initial_fetch = false;
+      inside.removeClass("error");
+      draw_graphs();
+    })
+    .fail(function() {
+      if (initial_fetch && !closed) inside.hide();
+      inside.find(".spinner").hide();
+      content.html("fail");
+      inside.addClass("error");
+      if (initial_fetch && !closed) inside.slideDown('fast', function() { inside.removeAttr("style"); });
+      return;
+    });
+  }
+  
   function array2flot(arr, jitter) {
     jitter = jitter || 0;
     var data = [];
@@ -46,6 +142,7 @@ jQuery(document).ready(function($){
             }
           }
     }
+    
     var plot = $.plot(selector, dataSets, options);
     
 /* this should add labels on top of bars 
@@ -66,16 +163,6 @@ jQuery(document).ready(function($){
     }
 */
     selector.attr("data", JSON.stringify(data));
-    
-    $(window).resize(function() {
-      $.plot(selector, dataSets, options);
-    });
-    
-    $('body').on('click', '#toplist_cz_dashboard .handlediv', function () {
-      if (!$('#toplist_cz_dashboard').hasClass("closed")) {
-        $.plot(selector, dataSets, options);
-      }
-    });
   }
 
   function showTooltip(x, y, contents, z) {
@@ -132,20 +219,25 @@ jQuery(document).ready(function($){
 */
 
   var data = {
-		'action'   : 'toplist_cz_dashboard_content',
-		'_wpnonce' : $("#toplist_cz_dashboard .inside #toplist_nonce").attr("value")
-	};
+    'action'   : 'toplist_cz_dashboard_content',
+    '_wpnonce' : $("#toplist_cz_dashboard .inside #toplist_nonce").attr("value")
+  };
 
   function draw_graphs() {
-    var data = JSON.parse(window.atob($("#toplist_cz_dashboard #toplist_stats").attr("value")));
-    flot_navstevy_graph(data.navstevy_za_den, $("#navstevy-za-den .graph"));
-    flot_navstevy_graph(data.navstevy_za_mesic, $("#navstevy-za-mesic .graph"));
-    //table_2_columns(response.vstupni_stranky, $("#vstupni-stranky table"));
-    //table_2_columns(response.domeny, $("#navstevy-podle-domen table"));
+    if (!$('#toplist_cz_dashboard').hasClass("closed")) {
+      var data = JSON.parse(window.atob($("#toplist_cz_dashboard #toplist_stats").attr("value")));
+      flot_navstevy_graph(data.navstevy_za_den, $("#navstevy-za-den .graph"));
+      flot_navstevy_graph(data.navstevy_za_mesic, $("#navstevy-za-mesic .graph"));
+      //table_2_columns(response.vstupni_stranky, $("#vstupni-stranky table"));
+      //table_2_columns(response.domeny, $("#navstevy-podle-domen table"));
+    }
   }
+  
+  $(window).resize(draw_graphs);
+  $('#toplist_cz_dashboard .handlediv').click(draw_graphs);
 
   $('body').on('click', '#toplist_cz_dashboard #toplist_password_form #toplist_password_submit', function() {
-	  inside.removeClass("toplist_error_pulsate");
+    inside.removeClass("toplist_error_pulsate");
     var pwd = $(this).parents("form").find("#toplist_password");
     if (pwd.val() == '') {
       pwd.css('background-color', 'LightPink');
@@ -154,50 +246,87 @@ jQuery(document).ready(function($){
     }
     $("#toplist_cz_dashboard .inside #toplist_password_form .spinner").css("display", "inline-block");
     var data = {
-  		'action'   : 'toplist_cz_save_password',
-  		'_wpnonce' : $(this).parents("form").find("#toplist_password_nonce").val(),
-  		'password' : pwd.val()
-  	};
+      'action'   : 'toplist_cz_save_password',
+      '_wpnonce' : $(this).parents("form").find("#toplist_password_nonce").val(),
+      'password' : pwd.val()
+    };
     $("form#toplist_password_form input").attr("disabled", true);
     $.post(ajaxurl, data, function(response) {
       if (response.success) {
         inside.removeClass("error");
-    	  inside.slideUp('fast').html(response.html).slideDown('fast');
+        inside.slideUp('fast');
+        content.html(response.html);
+        inside.slideDown('fast');
+        inside.find(".spinner").hide().addClass("reload");
+        inside.find(".erroricon").hide();
+        initial_fetch = false;
         draw_graphs();
+        reload_time = ok_reload_time;
+        if (timer_id) clearInterval(timer_id);
+        timer_id = setInterval(reload, reload_time);
       } else {
-    	  inside.html(response.html);
-    	  inside.addClass("toplist_error_pulsate");
-    	}
-  	})
-  	.fail(function() {
-  	  inside.html("fail");
-  	  inside.addClass("toplist_error_pulsate");
-  	});    
+        inside.html(response.html);
+        inside.addClass("toplist_error_pulsate");
+      }
+    })
+    .fail(function() {
+      inside.html("fail");
+      inside.addClass("toplist_error_pulsate");
+    });    
 
   });
 
-  if (inside.text().trim() == "") {  // content not in the widget (not retrieved from cache), we need to get it via ajax
-  	$.post(ajaxurl, data, function(response) {
-  	  if (!closed) inside.hide()
-  	  inside.html(response.html);
-  	  if (!closed) inside.slideDown('fast', function() { inside.removeAttr("style"); });
-
-  	  if (!response.success) {
-  	    inside.addClass("error");
-  	    return;
-  	  }
-      inside.removeClass("error");
-  	  draw_graphs();
-  	})
-  	.fail(function() {
-  	  if (!closed) inside.hide()
-  	  inside.html("fail").addClass("error");
-  	  if (!closed) inside.slideDown('fast', function() { inside.removeAttr("style"); });
-  	  return;
-  	});
-
+  if (content.text().trim() == "") {  // content not in the widget (not retrieved from cache), we need to get it via ajax
+    reload();
   } else {
+    spinner.addClass("reload");
     draw_graphs();
   }
-  
+
+  // browser tab visibility:
+
+  var hidden = "hidden";
+  if (hidden in document)
+    document.addEventListener("visibilitychange", onvischange);
+  else if ((hidden = "mozHidden") in document)
+    document.addEventListener("mozvisibilitychange", onvischange);
+  else if ((hidden = "webkitHidden") in document)
+    document.addEventListener("webkitvisibilitychange", onvischange);
+  else if ((hidden = "msHidden") in document)
+    document.addEventListener("msvisibilitychange", onvischange);
+  // IE 9 and lower:
+  else if ("onfocusin" in document)
+    document.onfocusin = document.onfocusout = onvischange;
+  // All others:
+  else
+    window.onpageshow = window.onpagehide
+    = window.onfocus = window.onblur = onvischange;
+
+  function onvischange (evt) {
+    var v = "visible", h = "hidden",
+        evtMap = {
+          focus:v, focusin:v, pageshow:v, blur:h, focusout:h, pagehide:h
+        };
+
+    evt = evt || window.event;
+    var vis;
+    if (evt.type in evtMap)
+      vis = evtMap[evt.type];
+    else
+      vis = this[hidden] ? "hidden" : "visible";
+
+    if (vis == "hidden") {
+      active = false;
+    } else {
+      active = true;
+      if (!timer_id) {
+        timer_id = setInterval(reload, reload_time);
+        reload();
+      }
+    }
+  }
+
+  // set the initial state (but only if browser supports the Page Visibility API)
+  if( document[hidden] !== undefined )
+    onvischange({type: document[hidden] ? "blur" : "focus"});
 });

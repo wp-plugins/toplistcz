@@ -3,7 +3,7 @@
 Plugin Name: TopList.cz
 Plugin URI: http://wordpress.org/plugins/toplistcz/
 Description: Widget for easy integration of TopList.cz, popular Czech website visit statistics server.
-Version: 4.0.1
+Version: 4.1
 Author: Honza Skypala
 Author URI: http://www.honza.info
 License: WTFPL license applies
@@ -13,7 +13,7 @@ if(!class_exists('WP_Http'))
     include_once(ABSPATH . WPINC. '/class-http.php');
 
 class TopList_CZ_Widget extends WP_Widget {
-  const version = "4.0.1";
+  const version = "4.1";
   const use_cache = true;
   const cache_expiry = 900;  // 15 minutes * 60 seconds
 
@@ -386,14 +386,15 @@ class TopList_CZ_Widget extends WP_Widget {
   function draw_dashboard_widget() {
     wp_enqueue_script("toplist-cz-admin");
     wp_enqueue_script("flot");
-    $ajax_nonce = wp_create_nonce("toplist_dashboard_content");
-    echo "<data id=\"toplist_nonce\" value=\"$ajax_nonce\"></data>";
     $stats = get_option('toplist-cache-' . date('Y-m-d'), false);
-    if (self::use_cache && is_array($stats) && time() <= $stats['local_timestamp'] + self::cache_expiry) { // cache data still valid
+    $cache_valid = self::use_cache && is_array($stats) && time() <= $stats['local_timestamp'] + self::cache_expiry;
+    echo '<span class="spinner"' . ($cache_valid ? ' style="display:none;"' : '') . '></span>';
+    echo '<span class="erroricon" style="display:none;"></span>';
+    echo '<div class="content">';
+    if ($cache_valid) {
       echo self::dashboard_html($stats);
-    } else {
-      echo '<span class="spinner"></span>';
     }
+    echo '</div>';
   }
 
   private static function update_users_dashboard_order() {
@@ -518,7 +519,11 @@ class TopList_CZ_Widget extends WP_Widget {
   }
 
   public function ajax_dashboard_content() {
-    check_ajax_referer("toplist_dashboard_content");
+    $user = wp_get_current_user();
+    if (!is_user_logged_in() || !in_array(get_option('toplist_cz_dashboard_widget_user_level', 'administrator'), $user->roles)) {
+      http_response_code(403);
+      return;
+    }
     wp_send_json(self::dashboard_content());
   }
 
@@ -538,7 +543,8 @@ class TopList_CZ_Widget extends WP_Widget {
                          'html'    => self::password_form());
           default:
             return array('success' => false,
-                         'html'    => $html->get_error_message());
+                         'html'    => $html->get_error_message(),
+                         'reload'  => true);
         }
       }
   
