@@ -65,11 +65,12 @@ eventually for hiding the widget:
 == Screenshots ==
 
 1. Konfigurace widgetu / widget configuration
+2. Dashboard widget
 
 == Changelog ==
 
 = 4.1 =
-* Added totals to the legend
+* Added totals to the graph legends in dashboard widget
 * Support for TopList security code
 * Automatic (ajax) reload of dashboard widget every 15 minutes
 = 4.0.1 =
